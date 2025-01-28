@@ -1,0 +1,5 @@
+notion_token: "your-notion-token"
+github_token: "your-github-token"
+notion_page_id: "your-page-id"
+github_repo: "username/repo"
+sync_interval: 60  # minutes
