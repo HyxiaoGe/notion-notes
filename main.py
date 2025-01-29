@@ -55,65 +55,81 @@ class ContentConvert:
 
     def __init__(self):
         # 用于跟踪列表的缩进级别
+        self.list_states = [] # 用栈来跟踪列表状态
+        self.current_numbered_list = 0 # 当前有序列表的计数
+        self.in_numbered_list = False # 是否在有序列表中
         self.list_indent_level = 0
+        self.numbered_list_counter = 0  # 添加序号计数器
         self.table_data = {}  # 用于缓存表格数据
         self.processed_pages = set()  # 用于追踪已处理的页面
         self.page_map = {}  # 保存页面ID到文件路径的映射
 
     def convert_workspace(self, root_page: Dict, base_path: str) -> List[Tuple[str, str]]:
-        """转换整个工作区
+        """转换整个工作区"""
+        print("\n============ convert_workspace start ============")
+        print("root_page:", root_page)
+        print("base_path:", base_path)
+        print("============ convert_workspace end ============\n")
 
-                Args:
-                    root_page: 根页面内容
-                    base_path: 基础保存路径
-
-                Returns:
-                    List[Tuple[str, str]]: 文件路径和内容的列表
-                """
         self.processed_pages.clear()
         self.page_map.clear()
+
+        # 创建根目录
+        os.makedirs(base_path, exist_ok=True)
 
         return self._process_page_recursively(root_page, base_path)
 
     def _process_page_recursively(self, page_data: Dict, current_path: str) -> List[Tuple[str, str]]:
-        """递归处理页面及其子页面
+        """递归处理页面及其子页面"""
+        print("\n============ _process_page_recursively start ============")
+        print("page_data:", page_data)
+        print("current_path:", current_path)
+        print("============ _process_page_recursively end ============\n")
 
-        Args:
-            page_data: 页面数据
-            current_path: 当前处理路径
+        try:
+            # 获取page信息
+            page = page_data['page']
+            page_id = page['id']
 
-        Returns:
-            List[Tuple[str, str]]: 生成的文件路径和内容列表
-        """
-        page_id = page_data['id']
-        if page_id in self.processed_pages:
+            if page_id in self.processed_pages:
+                return []
+
+            self.processed_pages.add(page_id)
+
+            # 获取标题
+            title = page['properties']['title']['title'][0]['plain_text']
+            print(f"Processing page: {title}")
+
+            # 生成文件名
+            file_name = 'index.md'
+            dir_name = self._sanitize_filename(title)
+            dir_path = os.path.join(current_path, dir_name)
+            file_path = os.path.join(dir_path, file_name)
+
+            # 创建目录
+            os.makedirs(dir_path, exist_ok=True)
+
+            # 转换内容
+            content = self._convert_page_content(page_data)
+            results = [(file_path, content)]
+
+            # 处理子页面
+            if 'blocks' in page_data:
+                blocks = page_data['blocks']
+                for block in blocks:
+                    if block['type'] == 'child_page':
+                        child_page = {
+                            'page': block['page_info'],
+                            'blocks': block.get('children', {}).get('results', [])
+                        }
+                        child_results = self._process_page_recursively(child_page, dir_path)
+                        results.extend(child_results)
+
+            return results
+
+        except Exception as e:
+            print(f"Error processing page: {str(e)}")
             return []
-
-        self.processed_pages.add(page_id)
-
-        # 生成当前页面的文件名
-        file_name = self._generate_file_name(page_data)
-        file_path = os.path.join(current_path, file_name)
-        self.page_map[page_id] = file_path
-
-        # 转换当前页面内容
-        content = self._convert_page_content(page_data)
-        results = [(file_path, content)]
-
-        # 处理子页面
-        if 'blocks' in page_data and 'results' in page_data['blocks']:
-            for block in page_data['blocks']['results']:
-                if block['type'] == 'child_page':
-                    child_page_id = block['id']
-                    # 创建子目录
-                    child_dir = os.path.join(current_path, self._sanitize_filename(block['child_page']['title']))
-                    child_results = self._process_page_recursively(
-                        self._fetch_page_content(child_page_id),
-                        child_dir
-                    )
-                    results.extend(child_results)
-
-        return results
 
     def _generate_file_name(self, page_data: Dict) -> str:
         """生成文件名
@@ -133,55 +149,129 @@ class ContentConvert:
         return filename.strip()
 
     def _convert_page_content(self, page_data: Dict) -> str:
-        """转换页面内容为Markdown格式"""
-        title = self._get_page_title(page_data)
+        # 重置计数器
+        self.numbered_list_counter = 0
+        """转换页面内容为 Markdown 格式"""
+        try:
+            # 从page获取标题
+            page = page_data['page']
+            title = page['properties']['title']['title'][0]['plain_text']
 
-        markdown_lines = [
-            f"# {title}",
-            f"\n_Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}_\n",
-            "---\n"
-        ]
+            markdown_lines = [
+                f"# {title}",
+                f"\n_Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}_\n",
+                "---\n"
+            ]
 
-        # 添加目录导航
-        if page_data.get('parent', {}).get('type') != 'workspace':
-            markdown_lines.append("[< Back to parent](../README.md)\n")
+            # 处理blocks
+            if 'blocks' in page_data:
+                blocks = page_data['blocks']
+                if isinstance(blocks, dict) and 'results' in blocks:
+                    blocks = blocks['results']
 
-        # 处理页面块
-        if 'blocks' in page_data and 'results' in page_data['blocks']:
-            for block in page_data['blocks']['results']:
-                markdown_lines.append(self._convert_block(block))
+                for block in blocks:
+                    block_content = self._convert_block(block)
+                    if block_content:
+                        markdown_lines.append(block_content)
 
-        return '\n'.join(filter(None, markdown_lines))
+            return '\n'.join(filter(None, markdown_lines))
+
+        except Exception as e:
+            return ""
 
     def _convert_block(self, block: Dict) -> str:
-        """转换单个块为Markdown"""
-        block_type = block['type']
+        """转换单个块为 Markdown"""
+        try:
+            block_type = block['type']
+            block_data = block[block_type]
 
-        if block_type == 'child_page':
-            # 创建子页面链接
-            title = block['child_page']['title']
-            safe_title = self._sanitize_filename(title)
-            return f"## [{title}](./{safe_title}/README.md)\n"
+            if block_type == 'bulleted_list_item':
+                # 处理基本列表项
+                indent = "    " * len(self.list_states)  # 使用4个空格作为基本缩进
+                text = self._convert_rich_text(block_data['rich_text'])
+                result = f"{indent}- {text}\n"
 
-        elif block_type == 'paragraph':
-            return self._convert_paragraph(block['paragraph'])
+                if block.get('has_children') and 'children' in block:
+                    self.list_states.append('bulleted')
+                    for child in block['children']['results']:
+                        child_content = self._convert_block(child)
+                        if child_content:
+                            result += child_content
+                    self.list_states.pop()
 
-        elif block_type == 'heading_1':
-            return f"# {self._convert_rich_text(block['heading_1'].get('rich_text', []))}\n"
+                return result
+            elif block_type == 'numbered_list_item':
+                # 检查是否是新的一级有序列表
+                if not self.in_numbered_list or block.get('level', 0) == 0:
+                    self.current_numbered_list = 0  # 重置计数
+                    self.list_states = []  # 清空状态
 
-        elif block_type == 'heading_2':
-            return f"## {self._convert_rich_text(block['heading_2'].get('rich_text', []))}\n"
+                self.in_numbered_list = True
+                self.current_numbered_list += 1
+                indent = "    " * len(self.list_states)  # 使用4个空格作为基本缩进
+                text = self._convert_rich_text(block_data['rich_text'])
+                result = f"{indent}{self.current_numbered_list}. {text}\n"
 
-        elif block_type == 'heading_3':
-            return f"### {self._convert_rich_text(block['heading_3'].get('rich_text', []))}\n"
+                # 处理子项
+                if block.get('has_children') and 'children' in block:
+                    self.list_states.append('numbered')
+                    for child in block['children']['results']:
+                        child_content = self._convert_block(child)
+                        if child_content:
+                            result += child_content
+                    self.list_states.pop()
 
-        elif block_type == 'bulleted_list_item':
-            return f"- {self._convert_rich_text(block['bulleted_list_item'].get('rich_text', []))}\n"
+                return result
 
-        elif block_type == 'numbered_list_item':
-            return f"1. {self._convert_rich_text(block['numbered_list_item'].get('rich_text', []))}\n"
+            # 不是列表项,清除列表状态
+            self.in_numbered_list = False
+            self.list_states = []
 
-        return ''
+            if block_type == 'paragraph':
+                # 处理段落
+                if 'rich_text' in block_data:
+                    text = self._convert_rich_text(block_data['rich_text'])
+                    return f"{text}\n\n" if text else ""
+
+            elif block_type == 'heading_1':
+                # 处理一级标题
+                if 'rich_text' in block_data:
+                    text = self._convert_rich_text(block_data['rich_text'])
+                    return f"# {text}\n\n"
+
+            elif block_type == 'heading_2':
+                # 处理二级标题
+                if 'rich_text' in block_data:
+                    text = self._convert_rich_text(block_data['rich_text'])
+                    return f"## {text}\n\n"
+
+            elif block_type == 'heading_3':
+                # 处理三级标题
+                if 'rich_text' in block_data:
+                    text = self._convert_rich_text(block_data['rich_text'])
+                    return f"### {text}\n\n"
+
+            elif block_type == 'numbered_list_item':
+                # 处理有序列表
+                if 'rich_text' in block_data:
+                    text = self._convert_rich_text(block_data['rich_text'])
+                    return f"1. {text}\n"
+
+            elif block_type == 'code':
+                # 处理代码块
+                language = block_data.get('language', '')
+                text = self._convert_rich_text(block_data['rich_text'])
+                return f"```{language}\n{text}\n```\n\n"
+
+            elif block_type == 'quote':
+                # 处理引用
+                text = self._convert_rich_text(block_data['rich_text'])
+                return f"> {text}\n\n"
+
+            return ""
+
+        except Exception as e:
+            return ""
 
     def _convert_paragraph(self, paragraph: Dict) -> str:
         """转换段落内容"""
@@ -193,37 +283,28 @@ class ContentConvert:
         if not rich_text:
             return ""
 
-        result = []
+        text_parts = []
         for text in rich_text:
             content = text.get('plain_text', '')
             annotations = text.get('annotations', {})
-            href = text.get('href')
 
-            # 应用文本格式
-            if annotations.get('code'):
-                content = f'`{content}`'
+            # 处理文本格式
             if annotations.get('bold'):
-                content = f'**{content}**'
+                content = f"**{content}**"
             if annotations.get('italic'):
-                content = f'_{content}_'
+                content = f"*{content}*"
             if annotations.get('strikethrough'):
-                content = f'~~{content}~~'
+                content = f"~~{content}~~"
+            if annotations.get('code'):
+                content = f"`{content}`"
 
             # 处理链接
-            if href:
-                # 如果是内部链接，转换为相对路径
-                if href.startswith('notion://'):
-                    page_id = href.split('/')[-1]
-                    if page_id in self.page_map:
-                        href = os.path.relpath(
-                            self.page_map[page_id],
-                            os.path.dirname(self.current_file_path)
-                        )
-                content = f'[{content}]({href})'
+            if text.get('href'):
+                content = f"[{content}]({text['href']})"
 
-            result.append(content)
+            text_parts.append(content)
 
-        return ''.join(result)
+        return ''.join(text_parts)
 
     def _get_page_title(self, page_data: Dict) -> str:
         """获取页面标题"""
@@ -320,144 +401,6 @@ class ContentConvert:
 
         return '\n'.join(markdown_lines)
 
-    def _convert_block_with_children(self, block: Dict) -> str:
-        """转换块及其子块"""
-        block_content = self._convert_block(block)
-
-        # 处理子块
-        if block.get('has_children') and 'children' in block:
-            child_contents = []
-            # 增加缩进级别
-            self.list_indent_level += 1
-
-            for child in block['children']:
-                child_content = self._convert_block_with_children(child)
-                if child_content:
-                    child_contents.append(child_content)
-
-            # 恢复缩进级别
-            self.list_indent_level -= 1
-
-            # 特殊处理表格的子块
-            if block['type'] == 'table':
-                block_content = self._handle_table(
-                    block[block['type']],
-                    block['id'],
-                    block['children']
-                )
-            else:
-                block_content = block_content + "\n".join(child_contents)
-
-        return block_content
-
-    def _convert_table_cell(self, cell: List[Dict]) -> str:
-        """转换表格单元格内容"""
-        text = self._convert_rich_text(cell)
-        # 转义特殊字符
-        text = text.replace('\n', '<br>')
-        text = text.replace('|', '\\|')
-        return text or " "
-
-    def _handle_paragraph(self, data: Dict) -> str:
-        """处理段落"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        return f"{text}\n"
-
-    def _handle_heading_1(self, data: Dict) -> str:
-        """处理一级标题"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        return f"# {text}\n"
-
-    def _handle_heading_2(self, data: Dict) -> str:
-        """处理二级标题"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        return f"## {text}\n"
-
-    def _handle_heading_3(self, data: Dict) -> str:
-        """处理三级标题"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        return f"### {text}\n"
-
-    def _handle_bulleted_list_item(self, data: Dict) -> str:
-        """处理无序列表项"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        indent = "  " * self.list_indent_level
-        return f"{indent}- {text}\n"
-
-    def _handle_numbered_list_item(self, data: Dict) -> str:
-        """处理有序列表项"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        indent = "  " * self.list_indent_level
-        return f"{indent}1. {text}\n"
-
-    def _handle_to_do(self, data: Dict) -> str:
-        """处理待办事项"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        checked = data.get('checked', False)
-        checkbox = "[x]" if checked else "[ ]"
-        return f"- {checkbox} {text}\n"
-
-    def _handle_code(self, data: Dict) -> str:
-        """处理代码块"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        language = data.get('language', '')
-        return f"```{language}\n{text}\n```\n"
-
-    def _handle_quote(self, data: Dict) -> str:
-        """处理引用"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        return f"> {text}\n"
-
-    def _handle_callout(self, data: Dict) -> str:
-        """处理高亮块"""
-        text = self._convert_rich_text(data.get('rich_text', []))
-        icon = data.get('icon', {}).get('emoji', 'ℹ️')
-        return f"> {icon} **Note**\n> {text}\n"
-
-    def _handle_image(self, data: Dict) -> str:
-        """处理图片
-        暂时只处理外部图片链接
-        """
-        caption = self._convert_rich_text(data.get('caption', []))
-        if 'external' in data:
-            url = data['external'].get('url', '')
-            return f"![{caption}]({url})\n"
-        elif 'file' in data:
-            url = data['file'].get('url', '')
-            return f"![{caption}]({url})\n"
-        return ''
-
-    def _handle_table(self, data: Dict) -> str:
-        """处理表格
-        需要获取表格的子块来构建完整表格
-        """
-        # TODO: 实现表格处理
-        return "<!-- Table content not implemented yet -->\n"
-
-    def _handle_divider(self, _: Dict) -> str:
-        """处理分割线"""
-        return "---\n"
-
-    def _handle_unsupported(self, _: Dict) -> str:
-        """处理未支持的块类型"""
-        return "<!-- Unsupported content type -->\n"
-
-    def _handle_child_page(self, data: Dict) -> str:
-        """处理子页面引用"""
-        title = data.get('title', 'Untitled')
-        return f"[[{title}]]\n"
-
-    def _handle_bookmark(self, data: Dict) -> str:
-        """处理书签"""
-        url = data.get('url', '')
-        caption = self._convert_rich_text(data.get('caption', []))
-        return f"[{caption or url}]({url})\n"
-
-    def _handle_equation(self, data: Dict) -> str:
-        """处理数学公式"""
-        expression = data.get('expression', '')
-        return f"$${expression}$$\n"
-
 class SyncLogger:
     """同步日志管理器"""
     def __init__(self):
@@ -497,68 +440,82 @@ class NotionGitSync:
 
     @retry(stop_max_attempt_number=3, wait_fixed=2000)
     def get_notion_content(self):
-        """从Notion获取内容，失败时重试"""
+        """递归获取 Notion 内容"""
         try:
             self.logger.info(f"Fetching content from Notion page {self.config.notion_page_id}")
-            # 获取页面信息
-            page = self.notion.pages.retrieve(self.config.notion_page_id)
-            # 递归获取所有块
+            # 获取根页面
+            root_page = self.notion.pages.retrieve(self.config.notion_page_id)
+
+            # 获取块信息
             blocks = self.notion.blocks.children.list(self.config.notion_page_id)
 
+            # 递归获取所有内容
             content = {
-                'page': page,
-                'blocks': blocks
+                'page': root_page,
+                'blocks': self._get_all_blocks(self.config.notion_page_id)
             }
 
-            self.logger.info(f"Successfully fetched content from Notion: {content}")
             return content
         except Exception as e:
-            print(f"Error getting Notion content: {e}")
-            return
+            self.logger.error(f"Error getting Notion content: {str(e)}")
+            raise
 
     def _get_all_blocks(self, block_id: str) -> List[Dict]:
-        """递归获取所有块及其子块"""
         blocks = []
         try:
+            # 获取当前页面的所有块
             response = self.notion.blocks.children.list(block_id)
-            for block in response['results']:
-                blocks.append(block)
+            blocks = response['results']
 
-                # 处理可能包含子块的块类型
-                if block['has_children']:
-                    child_blocks = self._get_all_blocks(block['id'])
-                    block['children'] = child_blocks
+            # 递归获取所有有子项的块的内容
+            for block in blocks:
+                if block.get('has_children', False):  # 检查是否有子项
+                    # 获取子块
+                    child_id = block['id']
+                    child_blocks = self._get_all_blocks(child_id)
+                    # 保存子块
+                    block['children'] = {
+                        'results': child_blocks
+                    }
+
+                    # 如果是child_page类型,还需要获取页面信息
+                    if block['type'] == 'child_page':
+                        child_page = self.notion.pages.retrieve(child_id)
+                        block['page_info'] = child_page
 
             return blocks
+
         except Exception as e:
             self.logger.error(f"Error getting blocks for {block_id}: {str(e)}")
             return blocks
 
     @retry(stop_max_attempt_number=3, wait_fixed=2000)
-    def update_github(self, content):
-        """更新GitHub仓库，失败时重试"""
+    def update_github(self, file_path: str, content: str):
+        """更新 GitHub 仓库
+
+        Args:
+            file_path: 文件路径
+            content: markdown格式的文件内容
+        """
         try:
             repo = self.github.get_repo(self.config.github_repo)
-            # 生成文件路径和名称
-            timestamp = datetime.now().strftime('%Y-%m-%d-%H%M%S')
-            file_path = os.path.join(
-                self.config.base_path,
-                f"{timestamp}.md"
-            )
 
             try:
+                # 先尝试获取文件
                 file = repo.get_contents(file_path)
+                # 文件存在,更新它
                 repo.update_file(
                     file_path,
-                    f"Update from Notion {timestamp}",
+                    f"Update from Notion {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                     content,
                     file.sha
                 )
                 self.logger.info(f"Updated file {file_path} in GitHub")
             except Exception:
+                # 文件不存在,创建新文件
                 repo.create_file(
                     file_path,
-                    f"Create from Notion {timestamp}",
+                    f"Create from Notion {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                     content
                 )
                 self.logger.info(f"Created file {file_path} in GitHub")
@@ -576,10 +533,12 @@ class NotionGitSync:
                 self.logger.warning("No content fetched from Notion")
                 return
 
-            # 转换内容格式
-            markdown_content = self.converter.notion_to_markdown(notion_content)
+            # 转换内容
+            base_path = self.config.base_path
+            files = self.converter.convert_workspace(notion_content, base_path)
             # 更新到GitHub
-            self.update_github(markdown_content)
+            for file_path, content in files:
+                self.update_github(file_path, content)
 
             self.logger.info("Sync completed successfully")
 
@@ -609,15 +568,24 @@ class NotionGitSync:
                 # 休息一段时间后继续
                 time.sleep(300)
 
+
 def main():
-    import argparse
+    syncer = NotionGitSync()
 
-    parser = argparse.ArgumentParser(description='Notion to GitHub sync tool')
-    parser.add_argument('--config', type=str, help='Path to config file')
-    args = parser.parse_args()
+    # 获取内容
+    notion_content = syncer.get_notion_content()
 
-    syncer = NotionGitSync(args.config)
-    syncer.run()
+    # 转换内容
+    base_path = syncer.config.base_path
+    converter = ContentConvert()
+    files = converter.convert_workspace(notion_content, base_path)
+
+    # 更新到 GitHub
+    for file_path, content in files:
+        try:
+            syncer.update_github(file_path, content)
+        except Exception as e:
+            syncer.logger.error(f"Failed to update {file_path}: {str(e)}")
 
 if __name__ == '__main__':
     main()
