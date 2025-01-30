@@ -66,28 +66,22 @@ class ContentConvert:
 
     def convert_workspace(self, root_page: Dict, base_path: str) -> List[Tuple[str, str]]:
         """转换整个工作区"""
-        print("\n============ convert_workspace start ============")
-        print("root_page:", root_page)
-        print("base_path:", base_path)
-        print("============ convert_workspace end ============\n")
-
         self.processed_pages.clear()
         self.page_map.clear()
 
         # 创建根目录
         os.makedirs(base_path, exist_ok=True)
 
-        return self._process_page_recursively(root_page, base_path)
+        # 获取根页面信息
+        page = root_page["page"]
+        title = page['properties']['title']['title'][0]['plain_text']
 
-    def _process_page_recursively(self, page_data: Dict, current_path: str) -> List[Tuple[str, str]]:
+        return self._process_page_recursively(root_page, base_path, [])
+
+    def _process_page_recursively(self, page_data: Dict, base_path: str, path_components: List[str]) -> List[
+        Tuple[str, str]]:
         """递归处理页面及其子页面"""
-        print("\n============ _process_page_recursively start ============")
-        print("page_data:", page_data)
-        print("current_path:", current_path)
-        print("============ _process_page_recursively end ============\n")
-
         try:
-            # 获取page信息
             page = page_data['page']
             page_id = page['id']
 
@@ -96,18 +90,18 @@ class ContentConvert:
 
             self.processed_pages.add(page_id)
 
-            # 获取标题
+            # 获取标题并处理文件名
             title = page['properties']['title']['title'][0]['plain_text']
-            print(f"Processing page: {title}")
+            file_name = self._sanitize_filename(title) + '.md'
 
-            # 生成文件名
-            file_name = 'index.md'
-            dir_name = self._sanitize_filename(title)
-            dir_path = os.path.join(current_path, dir_name)
-            file_path = os.path.join(dir_path, file_name)
+            # 构建相对路径
+            current_path = os.path.join(base_path, *path_components)
 
-            # 创建目录
-            os.makedirs(dir_path, exist_ok=True)
+            # 创建目录（仅当不存在时）
+            os.makedirs(current_path, exist_ok=True)
+
+            # 构建文件完整路径
+            file_path = os.path.join(current_path, file_name)
 
             # 转换内容
             content = self._convert_page_content(page_data)
@@ -122,11 +116,14 @@ class ContentConvert:
                             'page': block['page_info'],
                             'blocks': block.get('children', {}).get('results', [])
                         }
-                        child_results = self._process_page_recursively(child_page, dir_path)
+                        child_results = self._process_page_recursively(
+                            child_page,
+                            base_path,
+                            path_components + [os.path.dirname(file_name)]
+                        )
                         results.extend(child_results)
 
             return results
-
         except Exception as e:
             print(f"Error processing page: {str(e)}")
             return []
@@ -489,40 +486,82 @@ class NotionGitSync:
             self.logger.error(f"Error getting blocks for {block_id}: {str(e)}")
             return blocks
 
-    @retry(stop_max_attempt_number=3, wait_fixed=2000)
     def update_github(self, file_path: str, content: str):
-        """更新 GitHub 仓库
-
-        Args:
-            file_path: 文件路径
-            content: markdown格式的文件内容
-        """
         try:
             repo = self.github.get_repo(self.config.github_repo)
 
+            # 标准化路径
+            file_path = file_path.replace(os.sep, '/')
+            if not file_path.startswith('notion_sync/'):
+                file_path = f"notion_sync/{file_path}"
+
+            # 确保父目录存在
+            dir_path = os.path.dirname(file_path)
             try:
-                # 先尝试获取文件
+                repo.get_contents(dir_path)
+            except:
+                # 创建父目录
+                repo.create_file(
+                    f"{dir_path}/README.md",
+                    f"Create directory {dir_path}",
+                    f"# {os.path.basename(dir_path)}\n"
+                )
+
+            # 更新或创建文件
+            try:
                 file = repo.get_contents(file_path)
-                # 文件存在,更新它
                 repo.update_file(
                     file_path,
                     f"Update from Notion {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                     content,
                     file.sha
                 )
-                self.logger.info(f"Updated file {file_path} in GitHub")
-            except Exception:
-                # 文件不存在,创建新文件
+                self.logger.info(f"Updated file {file_path}")
+                self._update_sync_log(repo, "update", file_path)
+            except:
                 repo.create_file(
                     file_path,
                     f"Create from Notion {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                     content
                 )
-                self.logger.info(f"Created file {file_path} in GitHub")
+                self.logger.info(f"Created file {file_path}")
+                self._update_sync_log(repo, "create", file_path)
 
         except Exception as e:
             self.logger.error(f"Error updating Github: {str(e)}")
             raise
+
+    def _update_sync_log(self, repo, action: str, file_path: str):
+        """更新同步日志"""
+        readme_path = "notion_sync/README.md"
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        try:
+            # 尝试读取现有的 README
+            readme = repo.get_contents(readme_path)
+            current_content = readme.decoded_content.decode()
+        except:
+            # 如果不存在，创建新的
+            current_content = "# Notion Sync Log\n\n"
+
+        # 添加新的同步记录
+        new_log = f"- {now}: {action} `{file_path}`\n"
+        updated_content = current_content + new_log
+
+        # 更新或创建 README
+        if 'readme' in locals():
+            repo.update_file(
+                readme_path,
+                f"Update sync log {now}",
+                updated_content,
+                readme.sha
+            )
+        else:
+            repo.create_file(
+                readme_path,
+                f"Create sync log",
+                updated_content
+            )
 
     def sync(self) -> None:
         """执行同步操作"""
