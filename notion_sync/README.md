@@ -13,3 +13,4 @@
 - 2025-02-02 18:05:21: update `notion_sync/Langchain.md`
 - 2025-02-02 19:04:45: update `notion_sync/AI.md`
 - 2025-02-02 19:04:48: update `notion_sync/LLM 大语言模型.md`
+- 2025-02-02 19:04:51: update `notion_sync/RAG.md`
