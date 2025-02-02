@@ -547,7 +547,7 @@ class NotionGitSync:
         # 添加新的同步记录
         new_log = f"- {now}: {action} `{file_path}`\n"
         updated_content = current_content + new_log
-
+    
         # 更新或创建 README
         if 'readme' in locals():
             repo.update_file(
