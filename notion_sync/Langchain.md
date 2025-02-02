@@ -1,6 +1,6 @@
 # Langchain
 
-_Last updated: 2025-02-02 23:12:01_
+_Last updated: 2025-02-02 23:20:29_
 
 ---
 
@@ -30,7 +30,7 @@ LangChain是一个用于开发由语言模型驱动的应用程序的框架。�
 ### 核心组件
 
 
-- **Models (模型)**：负责与各种语言模型的交互接口，支持多种LLM、聊天模型和文本嵌入模型的统一调用
+- **Models (模型)**：提供与大语言模型的统一交互接口，支持各类LLM、聊天模型和文本嵌入模型的调用
 
 - **Prompts (提示)**：专门用于管理和优化提示模板，提供标准化的提示工程工具
 
@@ -67,8 +67,20 @@ LangChain中的Prompts组件提供了一系列工具来管理和优化这些提�
 角色提示模板:
 
 
+- SystemMessagePromptTemplate: 系统角色消息模板
+
+- HumanMessagePromptTemplate: 人类角色消息模板
+
+- AIMessagePromptTemplate: AI角色消息模板
+
 提示模板类型:
 
+
+- PromptTemplate: 文本提示模板
+
+- ChatPromptTemplate: 聊天消息提示模板
+
+- MessagePlaceholder: 消息占位符
 
 **关键操作**
 
