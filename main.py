@@ -1,30 +1,62 @@
+import argparse
 import logging
 import os
+import sys
 from datetime import datetime
 from typing import Dict, List, Tuple
 
-import time
-
-from notion_client import Client as NotionClient
-from github import Github
-import schedule
 import yaml
+from github import Github
+from notion_client import Client as NotionClient
 from retrying import retry
 
 
 class Config:
     """配置管理类"""
-    def __init__(self, config_path: str = None):
-        self.config_path = config_path or os.getenv("CONFIG_PATH", "config.yml")
-        self.config = self._load_config()
 
-    def _load_config(self) -> Dict:
-        """加载配置文件"""
-        try:
-            with open(self.config_path, "r", encoding='utf-8') as f:
-                return yaml.safe_load(f)
-        except Exception as e:
-            raise Exception(f"Failed to load config: {str(e)}")
+    def __init__(self, config_path: str = None):
+        self.config = self._load_config(config_path)
+
+    def _load_config(self, config_path: str = None) -> Dict:
+        config = {}
+
+        # 1. 首先尝试从环境变量读取
+        env_mappings = {
+            "NOTION_TOKEN": "notion_token",
+            "GH_TOKEN": "github_token",  # GitHub Actions中使用
+            "GITHUB_TOKEN": "github_token",  # 本地测试使用
+            "NOTION_PAGE_ID": "notion_page_id"
+        }
+
+        for env_key, config_key in env_mappings.items():
+            value = os.getenv(env_key)
+            if value:
+                config[config_key] = value
+
+        # 2. 如果提供了配置文件，则读取
+        if config_path and os.path.exists(config_path):
+            try:
+                with open(config_path, "r", encoding='utf-8') as f:
+                    file_config = yaml.safe_load(f)
+                    if file_config:
+                        # 用文件配置补充未在环境变量中设置的项
+                        for key, value in file_config.items():
+                            if key not in config or not config[key]:  # 如果环境变量值为空也使用配置文件
+                                config[key] = value
+            except Exception as e:
+                raise ValueError(f"Failed to load config file: {str(e)}")
+
+        # 3. 设置默认值
+        config.setdefault('sync_interval', 30)
+        config.setdefault('base_path', 'notion_sync')
+
+        # 4. 验证必要的配置项
+        required_keys = ["notion_token", "github_token", "notion_page_id"]
+        missing_keys = [key for key in required_keys if not config.get(key)]
+        if missing_keys:
+            raise ValueError(f"Missing required configuration: {', '.join(missing_keys)}")
+
+        return config
 
     @property
     def notion_token(self) -> str:
@@ -50,14 +82,15 @@ class Config:
     def base_path(self) -> str:
         return self.config.get('base_path', 'notion_sync')
 
+
 class ContentConvert:
     """内容格式转换器"""
 
     def __init__(self):
         # 用于跟踪列表的缩进级别
-        self.list_states = [] # 用栈来跟踪列表状态
-        self.current_numbered_list = 0 # 当前有序列表的计数
-        self.in_numbered_list = False # 是否在有序列表中
+        self.list_states = []  # 用栈来跟踪列表状态
+        self.current_numbered_list = 0  # 当前有序列表的计数
+        self.in_numbered_list = False  # 是否在有序列表中
         self.list_indent_level = 0
         self.numbered_list_counter = 0  # 添加序号计数器
         self.table_data = {}  # 用于缓存表格数据
@@ -398,8 +431,10 @@ class ContentConvert:
 
         return '\n'.join(markdown_lines)
 
+
 class SyncLogger:
     """同步日志管理器"""
+
     def __init__(self):
         logging.basicConfig(
             level=logging.INFO,
@@ -420,8 +455,10 @@ class SyncLogger:
     def warning(self, message: str):
         self.logger.warning(message)
 
+
 class NotionGitSync:
     """Notion和GitHub同步工具"""
+
     def __init__(self, config_path: str = None):
         self.config = Config(config_path)
         self.logger = SyncLogger()
@@ -433,7 +470,6 @@ class NotionGitSync:
         self.converter = ContentConvert()
 
         self.logger.info("NotionGitSync initialized")
-
 
     @retry(stop_max_attempt_number=3, wait_fixed=2000)
     def get_notion_content(self):
@@ -547,7 +583,7 @@ class NotionGitSync:
         # 添加新的同步记录
         new_log = f"- {now}: {action} `{file_path}`\n"
         updated_content = current_content + new_log
-    
+
         # 更新或创建 README
         if 'readme' in locals():
             repo.update_file(
@@ -585,46 +621,28 @@ class NotionGitSync:
             self.logger.error(f"Sync failed: {str(e)}")
 
     def run(self) -> None:
-        """运行同步服务"""
-        self.logger.info(f"Starting sync service with {self.config.sync_interval} minutes interval")
-
-        # 设置定时任务
-        schedule.every(self.config.sync_interval).minutes.do(self.sync)
-
-        # 先执行一次同步
-        self.sync()
-
-        # 运行定时任务
-        while True:
-            try:
-                schedule.run_pending()
-                time.sleep(60)
-            except KeyboardInterrupt:
-                self.logger.info("Sync service stopped by user")
-                break
-            except Exception as e:
-                self.logger.error(f"Error in main loop: {str(e)}")
-                # 休息一段时间后继续
-                time.sleep(300)
+        """执行单次同步"""
+        self.logger.info("Starting sync process")
+        try:
+            self.sync()
+        except Exception as e:
+            self.logger.error(f"Sync failed: {str(e)}")
+            raise  # 重新抛出异常，让GitHub Actions知道任务失败
 
 
 def main():
-    syncer = NotionGitSync()
+    # 添加命令行参数解析
+    parser = argparse.ArgumentParser(description='Notion to GitHub sync tool')
+    parser.add_argument('--config', type=str, help='Path to config file')
+    args = parser.parse_args()
 
-    # 获取内容
-    notion_content = syncer.get_notion_content()
-
-    # 转换内容
-    base_path = syncer.config.base_path
-    converter = ContentConvert()
-    files = converter.convert_workspace(notion_content, base_path)
-
-    # 更新到 GitHub
-    for file_path, content in files:
-        try:
-            syncer.update_github(file_path, content)
-        except Exception as e:
-            syncer.logger.error(f"Failed to update {file_path}: {str(e)}")
+    try:
+        syncer = NotionGitSync(config_path=args.config)
+        syncer.run()  # 单次执行同步
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        sys.exit(1)
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
