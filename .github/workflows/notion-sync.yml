@@ -27,5 +27,6 @@ jobs:
         NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
         NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
+        GITHUB_REPO: "HyxiaoGe/notion-notes"
       run: | 
         python main.py || exit 1  # 添加错误处理
