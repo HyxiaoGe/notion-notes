@@ -1,6 +1,6 @@
 # Langchain
 
-_Last updated: 2025-02-02 22:47:04_
+_Last updated: 2025-02-02 22:52:43_
 
 ---
 
@@ -57,11 +57,92 @@ LangChain是一个用于开发由语言模型驱动的应用程序的框架。�
 4. 模板复用
 
 
+1. 最佳实践
+    2. 选择合适的格式化方式
+        3. 简单变量替换使用f-string
+        4. 需要条件判断等复杂逻辑时使用jinja2
+    5. 提示模板设计
+        6. 保持模板的清晰和可维护性
+        7. 合理使用系统消息和示例
+        8. 避免过于复杂的嵌套结构
+    9. 错误处理
+        10. 验证必要的变量是否存在
+        11. 处理格式化可能出现的异常
+    12. 性能优化
+        13. 重复使用的模板要缓存
+        14. 避免不必要的模板拼接操作
+
 **Model组件详解**
 
 
+1. 基本概念
+    Models是LangChain的核心组件，提供了一个标准接口来封装不同类型的LLM进行交互。LangChain本身不提供LLM,而是提供了接口来集成各种模型。
+    LangChain支持两种类型的模型:
+    - LLM: 使用纯文本作为输入和输出的大语言模型
+    - Chat Model: 使用聊天消息列表作为输入并返回聊天消息的聊天模型
+
+2. 组件架构
+    LangChain中Models组件的基类结构如下:
+    3. BaseLanguageModel(基类)
+        - BaseLLM(大语言模型基类)
+            - SimpleLLM(简化大语言模型)
+            - 第三方LLM集成(OpenAI、百度文心等)
+        - BaseChatModel(聊天模型基类)
+            - SimpleChatModel(简化聊天模型)
+            - 第三方Chat Model集成
+    4. Message组件类型:
+        - SystemMessage: 系统消息
+        - HumanMessage: 人类消息
+        - AIMessage: AI消息
+        - FunctionMessage: 函数调用消息
+        - ToolMessage: 工具调用消息
+
+1. 最佳实践
+    2. 选择合适的模型类型
+        3. 简单文本生成任务使用LLM
+        4. 对话类任务使用Chat Model
+    5. 正确处理异步操作
+        6. 在异步环境中使用ainvoke/astream
+        7. 批量处理时考虑使用batch
+    8. 异常处理
+        9. 处理模型调用可能的超时
+        10. 捕获API错误并适当处理
+    11. 性能优化
+        12. 合理使用批处理
+        13. 适时使用流式输出
+
 **OutputParser 解析器组件**
 
+
+3. Parser类型详解
+    Langchain 提供了多种Parser：
+    4. 基础Parser：
+        - StrOutputParser: 最简单的Parser,原样返回文本
+        - BaseOutputParser: 所有Parser的基类
+        - BaseLLMOutputParser: 专门用于LLM输出的基类
+    5. 格式化Parser：
+        - JsonOutputParser: 解析JSON格式输出
+        - XMLOutputParser: 解析XML格式输出
+        - PydanticOutputParser: 使用Pydantic模型解析输出
+    6. 列表类Parser：
+        - CommaSeparatedListOutputParser: 解析逗号分隔的列表
+        - NumberedListOutputParser: 解析数字编号的列表
+
+1. 最佳实践
+    2. 选择合适的Parser
+        - 简单文本使用StrOutputParser
+        - 结构化数据使用JsonOutputParser或PydanticOutputParser
+        - 列表数据使用专门的列表Parser
+    3. 提示设计
+        - 在提示中明确指定输出格式
+        - 使用Parser提供的format_instructions
+    4. 异常处理
+        - 总是处理可能的解析错误
+        - 考虑添加重试机制
+        - 提供合理的默认值
+    5. 性能优化
+        - 避免过于复杂的解析逻辑
+        - 合理使用缓存
 
 **LCEL表达式与Runnable协议**
 
@@ -71,3 +152,18 @@ LangChain是一个用于开发由语言模型驱动的应用程序的框架。�
     - batch/abatch: 批量处理
     - stream/astream: 流式输出
     - transform: 转换输入输出
+
+1. 最佳实践
+    2. 链的设计
+        - 使用管道操作符(|)构建简单链
+        - 复杂逻辑使用RunnableParallel
+        - 数据传递用RunnablePassthrough
+    3. 错误处理
+        - 合理使用try/except
+        - 实现错误回调处理
+    4. 性能优化
+        - 合适场景使用并行执行
+        - 批处理代替单个处理
+    5. 代码可维护性
+        - 链结构保持清晰
+        - 适当拆分复杂链
