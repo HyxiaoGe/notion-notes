@@ -1,6 +1,6 @@
 # Langchain
 
-_Last updated: 2025-02-02 18:05:10_
+_Last updated: 2025-02-02 19:04:43_
 
 ---
 
