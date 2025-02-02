@@ -23,9 +23,10 @@ class Config:
         # 1. 首先尝试从环境变量读取
         env_mappings = {
             "NOTION_TOKEN": "notion_token",
-            "GH_TOKEN": "github_token",  # GitHub Actions中使用
-            "GITHUB_TOKEN": "github_token",  # 本地测试使用
-            "NOTION_PAGE_ID": "notion_page_id"
+            "GH_TOKEN": "github_token",
+            "GITHUB_TOKEN": "github_token",
+            "NOTION_PAGE_ID": "notion_page_id",
+            "GITHUB_REPO": "github_repo"
         }
 
         for env_key, config_key in env_mappings.items():
