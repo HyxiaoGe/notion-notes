@@ -267,6 +267,16 @@ class ContentConvert:
                 if text:
                     result = f"```{language}\n{text}\n```\n\n"
                     return result
+            elif block_type == 'image':
+                image_data = block_data
+                url = image_data['file']['url']
+                caption = ""
+                if image_data.get('caption'):
+                    caption = self._convert_rich_text(image_data['caption'])
+
+                # 如果有caption就用caption作为alt文本,否则用"image"
+                alt_text = caption if caption else "image"
+                return f"![{alt_text}]({url})\n\n"
 
             # 不是列表项,清除列表状态
             self.in_numbered_list = False
