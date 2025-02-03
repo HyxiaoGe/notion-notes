@@ -1,6 +1,6 @@
 # LLM 大语言模型
 
-_Last updated: 2025-02-02 22:24:22_
+_Last updated: 2025-02-03 22:18:42_
 
 ---
 
@@ -43,6 +43,9 @@ _Last updated: 2025-02-02 22:24:22_
 # 大语言模型的工作流程
 
 
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/fd26e416-cc3e-44a7-b538-c284bc08aed9/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4667EUGGODH%2F20250203%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250203T141802Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEP7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIFG9HBw6GPgJt72r9seffRkyuhi8357nrwmkwrQslTakAiEAm2JslZFO7H2OK%2B5EyjxsDROU7MuhEXNh5sS4TelGnkkq%2FwMIFxAAGgw2Mzc0MjMxODM4MDUiDAs6xSwdYjeNDklcoircAyMydQSaEEWza5w8PqaXprhcG2I8HPTrIYyCsiX6Ytw6UXXGwwMA3xfOzKUOdJiJp5iDwJT0aR32gz7mxKNftUETBgbCyqLzLSxRFpYPd1vc6ll2ugCk3o8n9k7htvnOOuzJbS%2Fd%2FWqhzdAIhJXrAjnMm1n6sgWJ17gagaLuYpFbX6k3gJOBAwvkojqbdfxHgVv46MnIWL%2F3EiOeI0Iqqs%2FkCv6%2Fw3yJeHJiy7lti%2Fl11mA82FfrTsMDX1UB7Gg%2Bnb1o1zQtRfVFzuNOC5q9lgDB1dEMeuJiffuuQCnEvz%2B4POUACOhPLJunWMbT1P5TUUqWBaa%2Boz7%2FGGTnghO3m0zKIqFaN5tcIrmsDDGEvOYMlKBL3mwHsIs1B%2FoGVtKtnH36vhV%2F8IXOuuadHgVsXeXDJ1ex9o7AL%2BVIyTg%2BWHNBoqMEqQj62%2F19dFXA37TbAY6S%2BvcwcRSxhTho0dNFHI%2FTxXNeRwf4rR1SWjSfXpDBkvm0pIuRFgTLTtjML9CTviq1aODYdaOYB%2FEnnTAtRQuceJRnyxq%2FIE8sBra1a4kb2KRUCFBSJbQOvPL5UIy5Lw6EodQpH2Hg329BoYs%2BcnjM%2FzYGlIt4tEmb0cRAMsgeSjUnj40Z78nviu38MOqOg70GOqUBhX6oUPdlxEfzTpydd6Ete0z1sqjbScAZY4pAQw9dfCS3bNz8vrp2Q97dmVc9%2BavP8cl8yAUkkqKNPjlDWZ0oA%2BeIBLV6hsKVxa%2F9iDHKGWaDeDXdk8wJdOLPS7UWMEz%2BYL1%2FH4aY3Tl7ZU1CRC5dYFcLLmAtT%2BWaucwdWMAO5hrhj8pGGPqC5lfKYXRLXlY5jqeKMDqSTy4S6jVP0RLlP1xb2K%2Fa&X-Amz-Signature=9cf12bc36cbbd98dd3101b6e5cc99ddcfe689c24f7f6cacc56e1c147a430ce0c&X-Amz-SignedHeaders=host&x-id=GetObject)
+
+
 大语言模型的工作流程主要包含以下几个关键步骤：
 
 
@@ -51,17 +54,17 @@ _Last updated: 2025-02-02 22:24:22_
     - 文本标准化和分词
     - 构建训练数据集
 
-1. 模型训练
+2. 模型训练
     - 预训练阶段：通过大规模文本学习语言知识
     - 微调阶段：针对特定任务进行优化
     - 参数调整和验证
 
-1. 推理过程
+3. 推理过程
     - 接收用户输入
     - 文本编码和处理
     - 生成响应结果
 
-1. 输出优化
+4. 输出优化
     - 结果过滤和优化
     - 安全检查
     - 格式化输出
@@ -80,12 +83,12 @@ _Last updated: 2025-02-02 22:24:22_
     - 对token进行编码转换为向量
     - 建立上下文关系
 
-1. 概率计算
+2. 概率计算
     - 计算每个可能token的出现概率
     - 使用注意力机制分析token间关系
     - 考虑历史上下文信息
 
-1. token选择
+3. token选择
     - 基于统计，通过大量数据的统计，选择最合适的token
     - 应用采样策略（如温度参数调节）
     - 控制生成的多样性和创造性
