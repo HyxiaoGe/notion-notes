@@ -232,14 +232,13 @@ class ContentConvert:
 
                 return result
             elif block_type == 'numbered_list_item':
-                # 检查是否是新的一级有序列表
-                if not self.in_numbered_list or block.get('level', 0) == 0:
-                    self.current_numbered_list = 0  # 重置计数
-                    self.list_states = []  # 清空状态
+                if not self.in_numbered_list:
+                    self.current_numbered_list = 0
+                    self.list_states = []
 
                 self.in_numbered_list = True
                 self.current_numbered_list += 1
-                indent = "    " * len(self.list_states)  # 使用4个空格作为基本缩进
+                indent = "    " * len(self.list_states)
                 text = self._convert_rich_text(block_data['rich_text'])
                 result = f"{indent}{self.current_numbered_list}. {text}\n"
 
@@ -247,23 +246,44 @@ class ContentConvert:
                 if block.get('has_children') and 'children' in block:
                     self.list_states.append('numbered')
                     for child in block['children']['results']:
-                        child_content = self._convert_block(child)
-                        if child_content:
-                            result += child_content
+                        # 增加了对paragraph类型的处理
+                        if child['type'] == 'paragraph':
+                            # 段落文本要缩进,但不加序号
+                            child_text = self._convert_rich_text(child['paragraph']['rich_text'])
+                            if child_text:
+                                result += f"{indent}    {child_text}\n"
+                        else:
+                            child_content = self._convert_block(child)
+                            if child_content:
+                                result += child_content
                     self.list_states.pop()
 
                 return result
+            elif block_type == 'code':
+                result = ''
+                # 处理代码块
+                text = self._convert_rich_text(block_data['rich_text'])
+                language = block_data.get('language', '')
+                if text:
+                    result = f"```{language}\n{text}\n```\n\n"
+                    return result
 
             # 不是列表项,清除列表状态
             self.in_numbered_list = False
             self.list_states = []
 
             if block_type == 'paragraph':
-                # 处理段落
-                if 'rich_text' in block_data:
-                    text = self._convert_rich_text(block_data['rich_text'])
-                    return f"{text}\n\n" if text else ""
+                # 先处理段落本身
+                text = self._convert_rich_text(block_data.get('rich_text', []))
+                result = f"{text}\n\n" if text else ''
 
+                if block.get('has_children') and 'children' in block:
+                    for child in block['children']['results']:
+                        child_content = self._convert_block(child)
+                        if child_content:
+                            result += child_content
+
+                return result
             elif block_type == 'heading_1':
                 # 处理一级标题
                 if 'rich_text' in block_data:
@@ -282,17 +302,13 @@ class ContentConvert:
                     text = self._convert_rich_text(block_data['rich_text'])
                     return f"### {text}\n\n"
 
-            elif block_type == 'numbered_list_item':
-                # 处理有序列表
-                if 'rich_text' in block_data:
-                    text = self._convert_rich_text(block_data['rich_text'])
-                    return f"1. {text}\n"
-
             elif block_type == 'code':
                 # 处理代码块
-                language = block_data.get('language', '')
                 text = self._convert_rich_text(block_data['rich_text'])
-                return f"```{language}\n{text}\n```\n\n"
+                language = block_data.get('language', '')
+                if text:
+                    result = f"```{language}\n{text}\n```\n\n"
+                    return result
 
             elif block_type == 'quote':
                 # 处理引用
@@ -390,48 +406,6 @@ class ContentConvert:
             markdown_lines.append("| " + " | ".join(row) + " |")
 
         return "\n".join(markdown_lines) + "\n\n"
-
-    def notion_to_markdown(self, notion_content: Dict) -> str:
-        """将Notion内容转换为Markdown格式
-
-        Args:
-            notion_content (Dict): 包含page和blocks的Notion内容
-
-        Returns:
-            str: 转换后的Markdown文本
-        """
-        page = notion_content['page']
-        blocks = notion_content['blocks']
-
-        # 处理页面标题
-        title = notion_content['page']['properties']['title']['title'][0]['plain_text']
-
-        # 生成markdown内容
-        markdown_lines = [
-            f"# {title}",
-            f"\n_Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}_\n",
-            "---\n"
-        ]
-
-        # 处理所有块
-        for block in notion_content['blocks']['results']:
-            # 根据块类型进行处理
-            block_type = block['type']
-            if block_type == 'child_page':
-                # 处理子页面
-                page_title = block['child_page']['title']
-                markdown_lines.append(f"## [{page_title}](notion://{block['id']})\n")
-            elif block_type == 'paragraph':
-                # 处理段落
-                text = []
-                for rich_text in block['paragraph'].get('rich_text', []):
-                    if 'plain_text' in rich_text:
-                        text.append(rich_text['plain_text'])
-                if text:
-                    markdown_lines.append(' '.join(text) + '\n')
-
-        return '\n'.join(markdown_lines)
-
 
 class SyncLogger:
     """同步日志管理器"""
