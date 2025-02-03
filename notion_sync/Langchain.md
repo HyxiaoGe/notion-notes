@@ -1,6 +1,6 @@
 # Langchain
 
-_Last updated: 2025-02-03 20:30:37_
+_Last updated: 2025-02-03 20:35:20_
 
 ---
 
@@ -87,14 +87,71 @@ LangChain中的Prompts组件提供了一系列工具来管理和优化这些提�
 
 格式化LangChain支持两种格式化方式
 
+```python
+# f-string方式
+prompt = PromptTemplate.from_template("请将一个关于{subject}的笑话")
+
+# jinja2方式
+prompt = PromptTemplate.from_template(
+    "请将一个关于{{subject}}的笑话",
+    template_format="jinja2"
+)
+```
+
 
 提示模板拼接
+
+```python
+# 字符串提示拼接
+prompt = (
+    PromptTemplate.from_template("请将一个关于{subject}的冷笑话")
+    + "，让我开心下"
+    + "\n使用{language}语言。"
+)
+
+# 聊天提示拼接
+system_prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是OpenAI开发的聊天机器人，请根据用户的提问进行回复，我叫{username}")
+])
+human_prompt = ChatPromptTemplate.from_messages([
+    ("human", "{query}")
+])
+prompt = system_prompt + human_prompt
+```
 
 
 **模板复用**
 
 
 对于复杂的提示模板,LangChain提供了PipelinePromptTemplate来实现模板的复用:
+
+```python
+# 描述提示模板
+instruction_template = "你正在模拟{person}。"
+instruction_prompt = PromptTemplate.from_template(instruction_template)
+
+# 示例提示模板
+example_template = """下面是一个交互例子:
+Q: {example_q}
+A: {example_a}"""
+example_prompt = PromptTemplate.from_template(example_template)
+
+# 开始提示模板
+start_template = """现在开始对话:
+Q: {input}
+A:"""
+start_prompt = PromptTemplate.from_template(start_template)
+
+# 组合模板
+pipeline_prompt = PipelinePromptTemplate(
+    final_prompt=full_prompt,
+    pipeline_prompts=[
+        ("instruction", instruction_prompt),
+        ("example", example_prompt),
+        ("start", start_prompt),
+    ]
+)
+```
 
 
 **最佳实践**
