@@ -1,6 +1,6 @@
 # Langchain
 
-_Last updated: 2025-02-03 20:49:19_
+_Last updated: 2025-02-03 22:18:42_
 
 ---
 
@@ -41,6 +41,9 @@ LangChain是一个用于开发由语言模型驱动的应用程序的框架。
 - **Chains (链)**：能将多个组件组合成端到端应用的核心机制，实现复杂的处理流程
 
 - **Agents (代理)**：赋予LLM使用工具的能力，支持自主推理和行动决策
+
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/7c5c69d7-7584-4b18-93ac-72f0968bfd6b/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466TJE7XSKF%2F20250203%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250203T141819Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEP7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJIMEYCIQC8XJdKYk7he6j0miZLMdSirMvfLBvKhSq2wMo4yaQhwwIhALWw9vQ6JLN%2Bij4PDkcgyDUKomGG%2Fw5tpuM83N5cJgIyKv8DCBcQABoMNjM3NDIzMTgzODA1IgxPaarjIJ17ycyRty4q3AOxR40RzMmr0YrmDCU%2FrjqE2VjL%2BI8vxano%2F3yq5Hm9pQgWJ5gSHYzFirtBfGDruzRpXlGMa3%2Bv0jnUK7xUPdtpj90IfHuwwPn15aYQ8nSH4CtmiJ9Bs9QnCvXJdD%2FmJE75RbomPuypTyxjNrwEI%2F1geKvlIv89euAkydpdEfj2wj0aQ6EMCN5Ey1tuHcMKPMID2SEIPTUbRa88y2yq1lI7isGcdXUYdQfmuIx9v5PEwd1zlCMv1WgTaXZW%2BjqFGVqhPatVj%2BZUc%2F%2B6sTYzXXVD3ea5zjtXD1l1%2BKB3pc8j5T%2FO0vpWvswyQKlckIAVBtoDDUX%2FVg53hBW9EiJ4NWrOjazo31hzPGFpBTOYgbgiWq5Dyyovc05ZzBeYyXiabGy24ixAuxkGjrPVOXzZwtaABw0%2F%2FbRJEajw7qzQxzdxMROK0CNw7r0k%2BMDgyssKb%2B5qdpfGmaev06yCwyBmaeuTRGi76yn65cB1gyCbAgWM7WrzWvFmrS9S9iurSqfMViXhM3quZuoJnuw02ldEi1jnRK9w%2F0FLSmLjWY6EhSnkjgdD3eM8A0aj5dLwr7gsJPCuV2%2Bn4bJ5xO5RI6w37bMR4L7xp4bR7HPYtDXTAOO2jPJ8TlOzYa1mjR3E2DCXjoO9BjqkAbmdBf8v5hUBg9uqjOueuaJ5%2FILC1AVmr2jlOUOMj7sP22bBFGqjtFIBmPttLSHMcjLeoAqK%2FfPUP0w1l7ggHyj45DVx0UAlmdBWAaF6ZByTpSwOJxXVb7rdtEmFNNVn5qnPzwpIbUKY3XTSbifXe5Wyx%2BbrcLC8%2F%2B3km%2BftILoKjL9xlmhoN5Bz1o5UQNLYGsmb2%2FQAhVyIk06MwZN3qs6PvFyD&X-Amz-Signature=ed812976e0bc151fe4fcb5531acd1c8756bb0205f4f418180e48d68c048fb393&X-Amz-SignedHeaders=host&x-id=GetObject)
+
 
 **Prompts组件介绍**
 
@@ -190,7 +193,7 @@ pipeline_prompt = PipelinePromptTemplate(
 **Model组件详解**
 
 
-基本概念
+**基本概念**
 
 Models是LangChain的核心组件，提供了一个标准接口来封装不同类型的LLM进行交互，LangChain本身不提供LLM,而是提供了接口来集成各种模型。
 
@@ -199,7 +202,7 @@ LangChain支持两种类型的模型:
 - LLM: 使用纯文本作为输入和输出的大语言模型
 - Chat Model: 使用聊天消息列表作为输入并返回聊天消息的聊天模型
 
-组件架构
+**组件架构**
 
 LangChain中Models组件的基类结构如下:
 
@@ -219,7 +222,7 @@ Message组件类型:
 - FunctionMessage: 函数调用消息
 - ToolMessage: 工具调用消息
 
-核心办法
+**核心办法**
 
 Models组件提供了几个关键方法:
 
@@ -254,7 +257,7 @@ for chunk in response:
 ```
 
 
-Message组件使用
+**Message组件使用**
 
 消息组件用于构建与聊天模型的交互:
 
@@ -274,7 +277,7 @@ response = chat_model.invoke(messages)
 ```
 
 
-实践示例
+**实践示例**
 
 基本对话示例：
 
@@ -321,23 +324,35 @@ for chunk in response:
 ```
 
 
-最佳实践
+**最佳实践**
+
 
 选择合适的模型类型
 
+
 1. 简单文本生成任务使用LLM
+
 2. 对话类任务使用Chat Model
+
 正确处理异步操作
 
+
 1. 在异步环境中使用ainvoke/astream
+
 2. 批量处理时考虑使用batch
+
 异常处理
 
+
 1. 处理模型调用可能的超时
+
 2. 捕获API错误并适当处理
+
 性能优化
 
+
 1. 合理使用批处理
+
 2. 适时使用流式输出
 
 **OutputParser 解析器组件**
@@ -365,7 +380,7 @@ OutputParser就是为了解决这些问题而设计的。它通过:
 1. 预设提示 - 告诉LLM需要的输出格式
 2. 解析功能 - 将输出转换成指定格式
 
-Parser类型详解
+**Parser类型详解**
 
 Langchain 提供了多种Parser：
 
@@ -381,7 +396,7 @@ Langchain 提供了多种Parser：
     - CommaSeparatedListOutputParser: 解析逗号分隔的列表
     - NumberedListOutputParser: 解析数字编号的列表
 
-实践示例
+**实践示例**
 
 1. StrOutputParser使用：
 ```python
@@ -429,7 +444,7 @@ response = chain.invoke({"query": "请讲一个关于程序员的冷笑话"})
 ```
 
 
-错误处理
+**错误处理**
 
 1. 解析失败的处理：
 ```python
@@ -454,7 +469,7 @@ class RetryHandler(BaseCallbackHandler):
 ```
 
 
-最佳实践
+**最佳实践**
 
 1. 选择合适的Parser
     - 简单文本使用StrOutputParser
@@ -503,7 +518,7 @@ content = chain.invoke({"query": req.query.data})
 - stream/astream: 流式输出
 - transform: 转换输入输出
 
-两个核心类
+**两个核心类**
 
 1. RunnableParallel - 并行执行多个Runnable
 ```python
@@ -533,7 +548,7 @@ chain = (
 ```
 
 
-实践示例
+**实践示例**
 
 1. 基础链构建：
 ```python
@@ -574,7 +589,7 @@ response = chain.invoke("问题")
 ```
 
 
-最佳实践
+**最佳实践**
 
 1. 链的设计
     - 使用管道操作符(|)构建简单链
