@@ -1,6 +1,6 @@
 # Langchain
 
-_Last updated: 2025-02-03 14:05:41_
+_Last updated: 2025-02-03 17:38:19_
 
 ---
 
@@ -105,42 +105,392 @@ LangChain中的Prompts组件提供了一系列工具来管理和优化这些提�
 
 1. 简单变量替换使用f-string
 
-1. 需要条件判断等复杂逻辑时使用jinja2
+2. 需要条件判断等复杂逻辑时使用jinja2
 
 提示模板设计
 
 
 1. 保持模板的清晰和可维护性
 
-1. 合理使用系统消息和示例
+2. 合理使用系统消息和示例
 
-1. 避免过于复杂的嵌套结构
+3. 避免过于复杂的嵌套结构
 
 错误处理
 
 
 1. 验证必要的变量是否存在
 
-1. 处理格式化可能出现的异常
+2. 处理格式化可能出现的异常
 
 性能优化
 
 
 1. 重复使用的模板要缓存
 
-1. 避免不必要的模板拼接操作
+2. 避免不必要的模板拼接操作
 
 **Model组件详解**
 
 
+1. 基本概念
+    Models是LangChain的核心组件，提供了一个标准接口来封装不同类型的LLM进行交互。LangChain本身不提供LLM,而是提供了接口来集成各种模型。
+    LangChain支持两种类型的模型:
+    - LLM: 使用纯文本作为输入和输出的大语言模型
+    - Chat Model: 使用聊天消息列表作为输入并返回聊天消息的聊天模型
+
+2. 组件架构
+    LangChain中Models组件的基类结构如下:
+    3. BaseLanguageModel(基类)
+        - BaseLLM(大语言模型基类)
+            - SimpleLLM(简化大语言模型)
+            - 第三方LLM集成(OpenAI、百度文心等)
+        - BaseChatModel(聊天模型基类)
+            - SimpleChatModel(简化聊天模型)
+            - 第三方Chat Model集成
+    4. Message组件类型:
+        - SystemMessage: 系统消息
+        - HumanMessage: 人类消息
+        - AIMessage: AI消息
+        - FunctionMessage: 函数调用消息
+        - ToolMessage: 工具调用消息
+
+5. 核心办法
+    Models组件提供了几个关键方法:
+    6. invoke/invoke_sync: 调用模型生成内容
+```python
+# 基本调用
+llm = ChatOpenAI(model="gpt-3.5-turbo-16k")
+response = llm.invoke("你好!")
+
+# 异步调用
+async def generate():
+    response = await llm.ainvoke("你好!")
+```
+
+    7. batch/abatch: 批量调用处理多个输入
+```python
+messages = [
+    "请讲一个关于程序员的笑话",
+    "请讲一个关于Python的笑话"
+]
+responses = llm.batch(messages)
+```
+
+    8. stream/astream: 流式返回生成内容
+```python
+response = llm.stream("请介绍下LLM和LLMOps")
+for chunk in response:
+    print(chunk.content, end="")
+```
+
+
+9. Message组件使用
+    消息组件用于构建与聊天模型的交互:
+```python
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+# 创建消息
+system_msg = SystemMessage(content="你是一个AI助手")
+human_msg = HumanMessage(content="你好!")
+ai_msg = AIMessage(content="你好!我是AI助手")
+
+# 构建消息列表
+messages = [system_msg, human_msg, ai_msg]
+
+# 使用消息与模型交互
+response = chat_model.invoke(messages)
+```
+
+
+10. 实践示例
+    11. 基本对话示例：
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+
+# 创建聊天模型
+chat = ChatOpenAI()
+
+# 创建提示模板
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是一位{role}"),
+    ("human", "{query}")
+])
+
+# 调用模型
+response = chat.invoke(
+    prompt.format_messages(
+        role="Python专家",
+        query="什么是装饰器?"
+    )
+)
+```
+
+    12. 流式输出示例：
+```python
+# 创建提示模板
+prompt = ChatPromptTemplate.from_template("{subject}的发展历史是什么?")
+
+# 创建模型
+llm = ChatOpenAI()
+
+# 流式生成
+response = llm.stream(
+    prompt.format_messages(subject="人工智能")
+)
+
+# 处理输出
+for chunk in response:
+    print(chunk.content, end="")
+```
+
+
+13. 最佳实践
+    14. 选择合适的模型类型
+        15. 简单文本生成任务使用LLM
+        16. 对话类任务使用Chat Model
+    17. 正确处理异步操作
+        18. 在异步环境中使用ainvoke/astream
+        19. 批量处理时考虑使用batch
+    20. 异常处理
+        21. 处理模型调用可能的超时
+        22. 捕获API错误并适当处理
+    23. 性能优化
+        24. 合理使用批处理
+        25. 适时使用流式输出
+
 **OutputParser 解析器组件**
 
+
+1. 为什么需要输出解析器
+    在使用大模型时,我们经常会遇到输出解析的问题。比如:
+```python
+llm = ChatOpenAI()
+
+# 示例1: 返回的是自然语言
+llm.invoke("1+1等于几?")  # 输出: 1 + 1 等于 2。
+
+# 示例2: 包含多余信息
+llm.invoke("告诉我3个动物的名字。")  # 输出: 好的，这里有三种动物的名字：\n1. 狮子\n2. 大熊猫\n3. 斑马
+
+# 示例3: 格式不统一
+llm.invoke("给我一个json数据,键为a和b")  # 输出: {\n "a": 10,\n "b": 20\n}
+```
+
+    OutputParser就是为了解决这些问题而设计的。它通过:
+    2. 预设提示 - 告诉LLM需要的输出格式
+    3. 解析功能 - 将输出转换成指定格式
+
+4. Parser类型详解
+    Langchain 提供了多种Parser：
+    5. 基础Parser：
+        - StrOutputParser: 最简单的Parser,原样返回文本
+        - BaseOutputParser: 所有Parser的基类
+        - BaseLLMOutputParser: 专门用于LLM输出的基类
+    6. 格式化Parser：
+        - JsonOutputParser: 解析JSON格式输出
+        - XMLOutputParser: 解析XML格式输出
+        - PydanticOutputParser: 使用Pydantic模型解析输出
+    7. 列表类Parser：
+        - CommaSeparatedListOutputParser: 解析逗号分隔的列表
+        - NumberedListOutputParser: 解析数字编号的列表
+
+8. 实践示例
+    9. StrOutputParser使用：
+```python
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+
+# 创建链
+chain = (
+    ChatPromptTemplate.from_template("{query}")
+    | ChatOpenAI()
+    | StrOutputParser()
+)
+
+# 调用
+response = chain.invoke({"query": "你好!"})
+```
+
+    10. JsonOutputParser使用：
+```python
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.pydantic_v1 import BaseModel, Field
+
+# 定义输出结构
+class Joke(BaseModel):
+    joke: str = Field(description="回答用户的冷笑话")
+    punchline: str = Field(description="冷笑话的笑点")
+
+# 创建Parser
+parser = JsonOutputParser(pydantic_object=Joke)
+
+# 创建提示模板
+prompt = ChatPromptTemplate.from_template(
+    "回答用户的问题。\n{format_instructions}\n{query}\n"
+)
+
+# 添加格式说明
+prompt = prompt.partial(format_instructions=parser.get_format_instructions())
+
+# 创建链
+chain = prompt | ChatOpenAI() | parser
+
+# 使用
+response = chain.invoke({"query": "请讲一个关于程序员的冷笑话"})
+```
+
+
+11. 错误处理
+    12. 解析失败的处理：
+```python
+from langchain_core.output_parsers import OutputParserException
+
+try:
+    result = parser.parse(llm_output)
+except OutputParserException as e:
+    # 处理解析错误
+    print(f"解析错误: {e}")
+    # 可以选择重试或使用默认值
+```
+
+    13. 使用重试机制：
+```python
+# 可以配置回调来处理重试
+from langchain_core.callbacks import BaseCallbackHandler
+
+class RetryHandler(BaseCallbackHandler):
+    def on_retry(self, retry_state):
+        print(f"重试次数: {retry_state.attempt_number}")
+```
+
+
+14. 最佳实践
+    15. 选择合适的Parser
+        - 简单文本使用StrOutputParser
+        - 结构化数据使用JsonOutputParser或PydanticOutputParser
+        - 列表数据使用专门的列表Parser
+    16. 提示设计
+        - 在提示中明确指定输出格式
+        - 使用Parser提供的format_instructions
+    17. 异常处理
+        - 总是处理可能的解析错误
+        - 考虑添加重试机制
+        - 提供合理的默认值
+    18. 性能优化
+        - 避免过于复杂的解析逻辑
+        - 合理使用缓存
 
 **LCEL表达式与Runnable协议**
 
 
-1. **Runnable协议核心方法**
+1. **为什么需要LCEL**
+    传统的链式调用方式存在嵌套问题：
+```python
+content = parser.invoke(
+    llm.invoke(
+        prompt.invoke(
+            {"query": req.query.data}
+        )
+    )
+)
+```
+
+    LCEL 提供了更优雅的方式：
+```python
+chain = prompt | llm | parser
+content = chain.invoke({"query": req.query.data})
+```
+
+
+2. **Runnable协议核心方法**
     - invoke/ainvoke: 调用组件
     - batch/abatch: 批量处理
     - stream/astream: 流式输出
     - transform: 转换输入输出
+
+3. 两个核心类
+    4. RunnableParallel - 并行执行多个Runnable
+```python
+from langchain_core.runnables import RunnableParallel
+
+# 并行执行多个链
+chain = RunnableParallel(
+    joke=joke_chain,
+    poem=poem_chain
+)
+resp = chain.invoke({"subject": "程序员"})
+```
+
+    5. RunnablePassthrough - 传递数据
+```python
+from langchain_core.runnables import RunnablePassthrough
+
+# 构建检索链
+chain = (
+    RunnablePassthrough.assign(
+        context=lambda query: retrieval(query)
+    )
+    | prompt 
+    | llm 
+    | parser
+)
+```
+
+
+6. 实践示例
+    7. 基础链构建：
+```python
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
+# 创建组件
+prompt = ChatPromptTemplate.from_template("{input}")
+llm = ChatOpenAI()
+parser = StrOutputParser()
+
+# 构建链
+chain = prompt | llm | parser
+
+# 执行
+response = chain.invoke({"input": "Hello!"})
+```
+
+    8. 带检索的链：
+```python
+def retrieval(query: str) -> str:
+    return "相关文档内容..."
+
+# 构建链
+chain = (
+    {
+        "context": retrieval,
+        "question": RunnablePassthrough()
+    }
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+# 执行
+response = chain.invoke("问题")
+```
+
+
+9. 最佳实践
+    10. 链的设计
+        - 使用管道操作符(|)构建简单链
+        - 复杂逻辑使用RunnableParallel
+        - 数据传递用RunnablePassthrough
+    11. 错误处理
+        - 合理使用try/except
+        - 实现错误回调处理
+    12. 性能优化
+        - 合适场景使用并行执行
+        - 批处理代替单个处理
+    13. 代码可维护性
+        - 链结构保持清晰
+        - 适当拆分复杂链
