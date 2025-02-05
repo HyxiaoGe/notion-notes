@@ -56,3 +56,4 @@
 - 2025-02-03 22:18:54: update `notion_sync/RAG.md`
 - 2025-02-03 22:18:59: update `notion_sync/Langchain.md`
 - 2025-02-05 14:05:32: update `notion_sync/AI.md`
+- 2025-02-05 14:05:35: create `notion_sync/夯实基础了解LLm大语言模型.md`
