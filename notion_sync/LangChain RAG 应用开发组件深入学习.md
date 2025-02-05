@@ -1,6 +1,6 @@
 # LangChain RAG 应用开发组件深入学习
 
-_Last updated: 2025-02-05 14:05:30_
+_Last updated: 2025-02-05 20:06:47_
 
 ---
 
