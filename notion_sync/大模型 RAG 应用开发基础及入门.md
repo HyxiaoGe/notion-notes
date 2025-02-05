@@ -1,6 +1,6 @@
 # 大模型 RAG 应用开发基础及入门
 
-_Last updated: 2025-02-05 20:06:47_
+_Last updated: 2025-02-06 02:05:23_
 
 ---
 
@@ -26,7 +26,7 @@ _Last updated: 2025-02-05 20:06:47_
 
 - 正确事实: Neil Armstrong才是第一个登上月球的人(1969年阿波罗11号任务)
 
-这种幻觉之所以危险,是因为模型生成的内容看起来很可信,但实际上完全错误。
+这种幻觉之所以危险，是因为模型生成的内容看起来很可信，但实际上完全错误。
 
 
 ### 忠实性幻觉
@@ -41,7 +41,7 @@ _Last updated: 2025-02-05 20:06:47_
 
 - 逻辑链不一致（推理过程存在漏洞）
 
-比如在总结新闻时,模型可能会添加原文中不存在的细节,或者前后描述矛盾。
+比如在总结新闻时，模型可能会添加原文中不存在的细节，或者前后描述矛盾。
 
 
 ## 为什么会产生幻觉？
@@ -103,13 +103,13 @@ _Last updated: 2025-02-05 20:06:47_
 简单来说：RAG = 外部知识检索 + Prompt构建 + LLM 生成
 
 
-![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/c4c615d5-19f1-4c9d-8caa-eee0f593fefc/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UXKK6YH6%2F20250205%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250205T120641Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECsaCXVzLXdlc3QtMiJGMEQCIEWVv5fXx0sTLueyQa02CoyM5gVL752ypaH5AOSQb4AKAiAcKhE6R5LDEpwJgEcbSuxcBfxo8wHeR5AkjERkHfEBkSr%2FAwhEEAAaDDYzNzQyMzE4MzgwNSIMBego4nx7Bf0SWArSKtwD42DOD2le%2FBa2fQdQZU4TX4MEPeFIwV%2FcQqkgW5IU7Q%2BauS1VoNMaselD6GAbkBa3n6p2f8lnXtT1VZDi207o41YxQwOomH%2B9mR1vQC4UvyAEQEpTVhC%2BlrzFl%2Bk4mBkMxZLaLJ9N%2BqCskHGf7WRVN2OEcztODENFU0NN29h3hKztsSxqDjlJE0eqwf%2FxhQmtMTgsmjizv9DP4p1UIzKGfFnKryplIEt8VGQ6FoiBKMZZorAxD22CzJoR%2Fv8t2YkJJdNtJlQKztR4LLQAZFfTo%2FKkx0uD2i9yLov68ozk3mEtKFPbAOfnkkuopBpmiuf%2B%2BC7JkGuhStb%2FzAFEnNUUcznGyqFD4PPSqM0NARBF6%2BBT2IQOJ9fx69hz4GoIx7T4vC5T9WotnoP%2BCinIMfKQXeWpMYSomoOtLrPchWMagcOJEot1jTCm3uB1A5fs%2F7ljY6a9u%2FEobjZB79dL3EMvNmFKEXc8c%2FYHewQ44VNqmYIFaFHsrZ5OvvMEWcKJj4m84dyOBZ9szXm%2BXR%2BYN6eUHkUlA72qmCJF5QC6WDvu5v3FsByRsuIrGeZC5yNje6o6wZC6ZtqRsKsUciN14m4acddE6m1BvJv3bj5a05e2NkkccRbuVe4TvklUwbswkYuNvQY6pgEn%2BtAZ6RczAvFToevQyUmf6qSS5b3iq4pbm7ghMR8Fj2oDIzfbCQd3QMRss5sL5%2BcV8a0Zjszg4EFJMCKDZISHDYJq0F03wtFcE2lI5t%2FeU8biyzaWBE0xHSNW26HoSqa7WdsNwSLjDfH4aOM51YAsy8sRgKbeY5c9X%2FhC%2FS99Sp1K0jIxZRIZYKBPzWJ5DRq9eZabHYK4WzfaX9r52Cruj9CG28U6&X-Amz-Signature=1871c7008c70183320280e7e22d31725926e05155124b8dfdd17806936551aa1&X-Amz-SignedHeaders=host&x-id=GetObject)
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/c4c615d5-19f1-4c9d-8caa-eee0f593fefc/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466W44SRLA6%2F20250205%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250205T180517Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEDIaCXVzLXdlc3QtMiJIMEYCIQDKdkE2AU8neoXw4BmSnNQuDRaayPVSdPHpCHYfjIMS0QIhAO4miXTcsdPwZt2sQkJNwsUuTiVB%2F1KzmDlYYNlE90oJKv8DCEoQABoMNjM3NDIzMTgzODA1IgyjuDwaVFedOmkWZnEq3AOmGy58i8KA0dxzyFqJ5TQEiNWxcWAaVr8ppV3Ir3V3lIWq9pVPjbSMzc9WWi3xMjkdxhhgLcDbREmLz0cFYOj3HQRPl2Ahvoepzi75bC%2BqouN74qJFsjkRpCIDy%2Bqa8D241%2B6kKSP70dQ0vmVGAkvxAl2RBv2S%2B6wbTKBhwxJHRtz0tmG96%2FwBdzEnYYq2mdK0hdGlznxoKU9FXxdFia5jW%2BvLKS4Osj5KWC%2FVVMqDe8FeZSWfqdfGvJSAJrDZCIdWkYoAssU%2Brm5BYvXNnTuhSX94s4AdYHrsa0UcIc7DuDVAFGcd639M3V1EiZhzKEJ5bVibDFyLyDnRFkpmHlbqk9OjS2AN3OL6QTfxjunUeHhLFDuBb%2BugXn%2Bc7Zf%2BqOoq3m4E3sixDqEeVXuGmC%2FhMZq2q4PLMO2Qn6F2GB1o30fCu7p6f3mL%2FDyn47oRqVMOx8t%2FTmc2H9QFynZpz3sPJEUUdPoPi%2B%2FuTyqC%2B%2BFyo1kOnv75vGCr0PfobKNxlCGzlV0%2BngKKyA1gYhEzdRkVizEmwjMuKbw2tySmIl1wJED6JnlVThvVIt95OnI2q2Y3ESqOteh1mue0adeswlXp0XdLCV6RmR8YRQk8ZD8XIB0Q5v8mR2Sjh0xrWjDnuo69BjqkARrc8HZ8FpdbvZYTVaSvlfKqrhINc7RNqcM%2BEemTG2fh0tNABPAaBQPWAROn1gH5PRNnba9qXNIJugdxYleAp%2FlWGwFgI497DkVoePSy0LKXk7CF%2BpSHvex%2F7gnXllXaedK51tiev2F1RSG4TvmHHzjMRx1H4hFO3rLTMHjMKnrC%2FRi5oXX3hj5CZZZdEf2LOH8fq3%2B2EmbJ%2FwbyCNzx5IgqZ0z%2F&X-Amz-Signature=795f0fb885802a83d0c076667034dcb917fe51eeea30c23b51b6ea717e4066b0&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
 ### 为什么需要RAG？
 
 
-LLM虽然是一个强大的工具,但它本身拒绝了解任何时事,且它给出的答案总是非常流畅,内容却不一定靠谱。这存在几个主要的问题:
+LLM虽然是一个强大的工具，但它本身拒绝了解任何时事，且它给出的答案总是非常流畅，内容却不一定靠谱。这存在几个主要的问题:
 
 
 1. LLM的训练数据量有限且无法更新到最新知识。
@@ -153,7 +153,7 @@ RAG采用三种主要的检索方式：
 ### RAG实战示例
 
 
-以一个简单的问答场景为例,展示RAG的实际应用流程:
+以一个简单的问答场景为例，展示RAG的实际应用流程:
 
 
 1. 用户提问:"公司有销售什么产品？"
@@ -164,7 +164,7 @@ RAG采用三种主要的检索方式：
     - 通过LLM生成回答
     - 确保回答基于检索到的事实信息
 
-3. 最终输出:包含准确的产品信息,并且所有信息都可以溯源。
+3. 最终输出:包含准确的产品信息，并且所有信息都可以溯源。
 
 ## AI应用开发利器：向量数据库详解
 
@@ -191,7 +191,7 @@ RAG采用三种主要的检索方式：
 
 - 无毛猫
 
-每张猫咪图片都可以用一组数字向量来表示其特征,如:
+每张猫咪图片都可以用一组数字向量来表示其特征，如:
 
 
 ```javascript
@@ -201,7 +201,7 @@ RAG采用三种主要的检索方式：
 ```
 
 
-这些数字代表了猫咪的各种特征,比如:
+这些数字代表了猫咪的各种特征，比如:
 
 
 - 毛发长度
@@ -220,7 +220,7 @@ RAG采用三种主要的检索方式：
 
 1. **数据类型**：
     - 传统数据库：数值、字符串、时间等结构化数据
-    - 向量数据库：向量数据(不存储原始数据,有的也支持)
+    - 向量数据库：向量数据(不存储原始数据，有的也支持)
 
 2. **数据规模**：
     - 传统数据库：小，1亿条数据对关系型数据库来说规模很大
@@ -232,7 +232,7 @@ RAG采用三种主要的检索方式：
 
 4. **查找方式**：
     - 传统数据库：精确查找/范围查找
-    - 向量数据库：近似查找,查询结果是与输入向量最相似的向量
+    - 向量数据库：近似查找，查询结果是与输入向量最相似的向量
 
 ### 相似度计算方法
 
