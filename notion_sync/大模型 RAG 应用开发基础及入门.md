@@ -1,6 +1,6 @@
 # 大模型 RAG 应用开发基础及入门
 
-_Last updated: 2025-02-06 14:05:50_
+_Last updated: 2025-02-06 20:06:42_
 
 ---
 
@@ -103,7 +103,7 @@ _Last updated: 2025-02-06 14:05:50_
 简单来说：RAG = 外部知识检索 + Prompt构建 + LLM 生成
 
 
-![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/c4c615d5-19f1-4c9d-8caa-eee0f593fefc/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YUNI7ZEZ%2F20250206%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250206T060545Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjED4aCXVzLXdlc3QtMiJGMEQCIGz%2F1%2FQktXDh48fgIEmgbMjvj05HKR9FFpq29ASWZHFSAiBrmSOFSHo2L%2FKa1RpwCQDyJpU0rWmj5JVbE0J%2FBdjIqSr%2FAwhXEAAaDDYzNzQyMzE4MzgwNSIMK3yuTNFYJOyaEz5JKtwDDmncxMH6aZsM3vAboo7IBGD9wlhNHtKmc3hApJZJ9FdO8SOnd%2BdcAAejG6%2BtRDUr1s53qomyqMRGRwlIYKv2DoJL8%2B%2BA6ah3tCQigehcSqAXVnP8V4Xa2lIuM41GcF5Y5DcbGXkorlvDUmZGspcswlA64IFecpDDPObhSA6DjVrP556RyLL8n5WD7QX5WxxiKu0RyImIW%2F6AQiA2acChEcpCcsAa27tLukwNbbe%2FiJEHAqZF892UbhJa1G%2Fej%2Bwh6NeQt23ZLam%2Fi7oj5wOZ38uO17SohI5zxFwodFapN0l9G5mW8B6OLK6d0fe2h5B%2F0rpu2Y3Y5iUQCEwffgvpIeRoWLUSvzVMx3bjYZBgHw4ywidRL%2Fv1l1qwODDSF8t3sRcRzPLD0SNdCQK9p8LtSegZovdupR%2FC4T6gJIG6tXeHPoMQkWobHx9mFv3DZ%2F7gTwffg9yFAqh8jCHPOumwdVVRo6uKdhI107U06iRhFqEgwuWbYjhmF6Hi1vU7XS7BWslo36BnQEXFjWtzMZftDJ69Pqy5UQp83Kav5sqMu%2BlJgMLmcuhaz6RULoJYmFroduVW%2Fd89nJkQqQBZuMqzeEtTSK9FkVWdSTa8ZNrDCw3JrYn4MuqtLmuOO4AwnpmRvQY6pgEugZzYw%2FhmYEdhroxnKrYzbM3V59UXuDaO%2BPKFlzm%2Fc7OrGMv0l4%2FB5L2tVM%2BaShe0HYtm3VjUoUxojXdzFaFRJqbpHvbl9NgglY3hVJURQmg8g%2FcQP8PuxaaYFfO4Qu393XpV8uR6qADNc4xZ4RVi0CJOl5KRe4RtxjTwy%2FSiEYD27GnEzcr681Cz86z%2BDau7bXocT8Wu9s2M08sbqOnmsyKKeyuv&X-Amz-Signature=8b38351e4b751a1105c7228dd5fb946cb3a86fa431d88e37b61cc2ad47a7b13b&X-Amz-SignedHeaders=host&x-id=GetObject)
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/c4c615d5-19f1-4c9d-8caa-eee0f593fefc/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB46633VRTZ22%2F20250206%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250206T120634Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEQaCXVzLXdlc3QtMiJIMEYCIQDtshT3nWvNlMXAjR91AY4RpjPBCys8546LJI0f%2BBBKhQIhAIkQ3oa3c3gdnOvkjOxtaHUsczdhs1mrxG3ki7dY7k9zKv8DCF0QABoMNjM3NDIzMTgzODA1IgzYamanb46QwYnxDAIq3ANKivgSU4T3kMcwiUcuvwQlbi2ixDglK6JKilzZm%2BKUJI705ytXLX9rStOUDC3oLLG1QnGBAwv77o9VnbXJGlMXBgL01xlD8QPVS%2B91AeKpxvB81nhddMMNVHJyQ1PVEZOY69i9MXCQiBmmQ7tXKG7%2FZItzLHJd9nMKehgfGDivRkcpMi2qF4oVnb%2B74WdgoNunHAq4zgEG01MlQpiOH%2BR66x%2BgD8Q8ip1eqHA8Vfvze%2FwKoBXD%2BgFbXm%2BZBuI45OB4YBGz1XMaXZvZCnY%2FRBBy%2B2rC9b7aq6G42q8jmpECcDMkaU35FXCMUN7nPLVUNei7cpWD3KQ8WUKQWKDQL9v6Mm7N1FxmLxTlpiYVI2SeFTN%2BXo8a27I%2B2uCw%2F2ov7aG5Z6Lm%2BxmYftIZXJ3NlObm17hlL1U2s5h0uSqKpNkqskKaw%2Fj0pkLRc8fYsqnVxqOl1WYvaSRLNk5hhHw%2Fj2tQqeyDRKvAt9oBa7pRKxXtLd65rhhSaqmEITmDSyWYZhIN1Lx2EN5%2Bbxz6S1diPEL6Xmm912MXVzhyANcpHTIY31PuUMYrUyoGmgJ8dpEmF0rekfLXeBhsSX3AwfOVVJCmCs9R17FN8ZW8NbCAsUVI3iqYhqRBhXuTTwrgcjDNw5K9BjqkATEwvx8WMYZy9diapYMryulrekpyLpzHsaQa%2FELlUgBnCAcCB8UbVvixVv4K6DMStZX1uc%2B%2Bn74kk%2FLjuFR%2Bp5YEiGVUoYCrEV9%2B%2BES%2B6FkpdJOVkdgw1zZw4iMHg2wbmyOxNjA6FDLSkfeTg1yJzb4of47aEUmM2RfEChW%2FmQ%2BG0%2FbsUVTyCG1PraLBtcFrqWbEFh%2FNID3TqzkanFiPbGBpr32J&X-Amz-Signature=300646438aba3e384ca21100d56e22e13581962259c35e675697992a16e1d545&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
 ### 为什么需要RAG？
@@ -149,6 +149,9 @@ RAG采用三种主要的检索方式：
     - 先生成答案
     - 然后检索验证
     - 对答案进行修正
+
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/4686426d-2314-4f87-ba63-abeb1a60669f/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB46633VRTZ22%2F20250206%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250206T120634Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEQaCXVzLXdlc3QtMiJIMEYCIQDtshT3nWvNlMXAjR91AY4RpjPBCys8546LJI0f%2BBBKhQIhAIkQ3oa3c3gdnOvkjOxtaHUsczdhs1mrxG3ki7dY7k9zKv8DCF0QABoMNjM3NDIzMTgzODA1IgzYamanb46QwYnxDAIq3ANKivgSU4T3kMcwiUcuvwQlbi2ixDglK6JKilzZm%2BKUJI705ytXLX9rStOUDC3oLLG1QnGBAwv77o9VnbXJGlMXBgL01xlD8QPVS%2B91AeKpxvB81nhddMMNVHJyQ1PVEZOY69i9MXCQiBmmQ7tXKG7%2FZItzLHJd9nMKehgfGDivRkcpMi2qF4oVnb%2B74WdgoNunHAq4zgEG01MlQpiOH%2BR66x%2BgD8Q8ip1eqHA8Vfvze%2FwKoBXD%2BgFbXm%2BZBuI45OB4YBGz1XMaXZvZCnY%2FRBBy%2B2rC9b7aq6G42q8jmpECcDMkaU35FXCMUN7nPLVUNei7cpWD3KQ8WUKQWKDQL9v6Mm7N1FxmLxTlpiYVI2SeFTN%2BXo8a27I%2B2uCw%2F2ov7aG5Z6Lm%2BxmYftIZXJ3NlObm17hlL1U2s5h0uSqKpNkqskKaw%2Fj0pkLRc8fYsqnVxqOl1WYvaSRLNk5hhHw%2Fj2tQqeyDRKvAt9oBa7pRKxXtLd65rhhSaqmEITmDSyWYZhIN1Lx2EN5%2Bbxz6S1diPEL6Xmm912MXVzhyANcpHTIY31PuUMYrUyoGmgJ8dpEmF0rekfLXeBhsSX3AwfOVVJCmCs9R17FN8ZW8NbCAsUVI3iqYhqRBhXuTTwrgcjDNw5K9BjqkATEwvx8WMYZy9diapYMryulrekpyLpzHsaQa%2FELlUgBnCAcCB8UbVvixVv4K6DMStZX1uc%2B%2Bn74kk%2FLjuFR%2Bp5YEiGVUoYCrEV9%2B%2BES%2B6FkpdJOVkdgw1zZw4iMHg2wbmyOxNjA6FDLSkfeTg1yJzb4of47aEUmM2RfEChW%2FmQ%2BG0%2FbsUVTyCG1PraLBtcFrqWbEFh%2FNID3TqzkanFiPbGBpr32J&X-Amz-Signature=2ac96ab426d2569895d3bd420bb13fc07317e90e0006decaf58e3c531c743554&X-Amz-SignedHeaders=host&x-id=GetObject)
+
 
 ### RAG实战示例
 
@@ -234,22 +237,32 @@ RAG采用三种主要的检索方式：
     - 传统数据库：精确查找/范围查找
     - 向量数据库：近似查找，查询结果是与输入向量最相似的向量
 
-### 相似度计算方法
+### 相似性抖索算法
 
 
-在向量数据库中，支持多种相似度计算方法：
+在向量数据库中，支持通过多种方式来计算两个向量的相似度：
 
 
-1. **余弦相似度**：计算两个向量间的夹角，特别适用于文本、图像等高维空间的相似度计算。计算公式：
+**余弦相似度**：主要是用于衡量向量在方向上的相似性，特别适用于文本、图像和高维空间中的向量。它不受向量长度的影响，只考虑方向的相似程度，计算公式如下（计算两个向量间的夹角的余弦值，取值范围为[-1, 1]）：
+
+
 ```shell
 similarity(A,B) = (A·B)/(||A||·||B||)
 ```
 
 
-2. **欧式距离**：计算两点间的直线距离，适合于低维空间需要考虑向量各个维度之间差异的情况。计算公式：
+**欧式距离**：主要是用于衡量向量之间的直线距离，得到的值可能很大，最小为0，通常用于低维空间或需要考虑向量各个维度之间差异的情况。欧式距离较小的向量被认为更相似，计算公式如下：
+
+
 ```shell
 distance(A,B) = √∑(Ai-Bi)²
 ```
+
+
+例如下图：左侧就是`欧式距离`，右侧就是`余弦相似度`。
+
+
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/5ffcc1e2-d42e-43e1-8304-359cfa6e287b/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB46633VRTZ22%2F20250206%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250206T120634Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEEQaCXVzLXdlc3QtMiJIMEYCIQDtshT3nWvNlMXAjR91AY4RpjPBCys8546LJI0f%2BBBKhQIhAIkQ3oa3c3gdnOvkjOxtaHUsczdhs1mrxG3ki7dY7k9zKv8DCF0QABoMNjM3NDIzMTgzODA1IgzYamanb46QwYnxDAIq3ANKivgSU4T3kMcwiUcuvwQlbi2ixDglK6JKilzZm%2BKUJI705ytXLX9rStOUDC3oLLG1QnGBAwv77o9VnbXJGlMXBgL01xlD8QPVS%2B91AeKpxvB81nhddMMNVHJyQ1PVEZOY69i9MXCQiBmmQ7tXKG7%2FZItzLHJd9nMKehgfGDivRkcpMi2qF4oVnb%2B74WdgoNunHAq4zgEG01MlQpiOH%2BR66x%2BgD8Q8ip1eqHA8Vfvze%2FwKoBXD%2BgFbXm%2BZBuI45OB4YBGz1XMaXZvZCnY%2FRBBy%2B2rC9b7aq6G42q8jmpECcDMkaU35FXCMUN7nPLVUNei7cpWD3KQ8WUKQWKDQL9v6Mm7N1FxmLxTlpiYVI2SeFTN%2BXo8a27I%2B2uCw%2F2ov7aG5Z6Lm%2BxmYftIZXJ3NlObm17hlL1U2s5h0uSqKpNkqskKaw%2Fj0pkLRc8fYsqnVxqOl1WYvaSRLNk5hhHw%2Fj2tQqeyDRKvAt9oBa7pRKxXtLd65rhhSaqmEITmDSyWYZhIN1Lx2EN5%2Bbxz6S1diPEL6Xmm912MXVzhyANcpHTIY31PuUMYrUyoGmgJ8dpEmF0rekfLXeBhsSX3AwfOVVJCmCs9R17FN8ZW8NbCAsUVI3iqYhqRBhXuTTwrgcjDNw5K9BjqkATEwvx8WMYZy9diapYMryulrekpyLpzHsaQa%2FELlUgBnCAcCB8UbVvixVv4K6DMStZX1uc%2B%2Bn74kk%2FLjuFR%2Bp5YEiGVUoYCrEV9%2B%2BES%2B6FkpdJOVkdgw1zZw4iMHg2wbmyOxNjA6FDLSkfeTg1yJzb4of47aEUmM2RfEChW%2FmQ%2BG0%2FbsUVTyCG1PraLBtcFrqWbEFh%2FNID3TqzkanFiPbGBpr32J&X-Amz-Signature=7b6f76174250b00fa13de3d5594fd7b8572b27decf9980915fe76a5fadc06b61&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
 ### 实际应用场景
@@ -280,22 +293,3 @@ distance(A,B) = √∑(Ai-Bi)²
 
 Embedding(嵌入)是一种在机器学习中广泛使用的技术，它能将文本、图片、视频等非结构化数据映射到向量空间中。一个Embedding向量通常是一个包含N个浮点数的数组，这个向量不仅表示了数据的特征，更重要的是通过学习可以表达它们的内在语义。
 
-
-比如一段文本、一张图片、一段视频，警告Embedding模型处理后都会变成类似这样的向量：
-
-
-```shell
-[0.5, 0.8, 0.7, 0.5, 0.8, 0.7, 0.5, 0.8, 0.7, 0.5]
-```
-
-
-### 主流的Embedding模型
-
-
-目前主要有这几类Embedding模型：
-
-
-1. Word2Vec
-    - 通过学习词语转化为连续的向量表示
-    - 基于两种主要算法：CBOW和Skip-gram
-    - 能够捕捉词语之间的语义关系
