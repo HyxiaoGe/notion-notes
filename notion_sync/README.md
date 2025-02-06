@@ -84,3 +84,4 @@
 - 2025-02-06 14:05:59: update `notion_sync/LangChain初入门.md`
 - 2025-02-06 14:06:03: update `notion_sync/大模型 RAG 应用开发基础及入门.md`
 - 2025-02-06 14:06:07: create `notion_sync/LangChain RAG 应用开发组件深度解析.md`
+- 2025-02-06 14:06:10: update `notion_sync/RAG 优化策略与知识库模块功能解析.md`
