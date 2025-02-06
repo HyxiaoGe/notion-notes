@@ -1,6 +1,6 @@
 # LangChain RAG 应用开发实战指南
 
-_Last updated: 2025-02-06 02:05:23_
+_Last updated: 2025-02-06 08:15:40_
 
 ---
 
