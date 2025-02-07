@@ -1,6 +1,6 @@
 # 夯实基础了解LLm大语言模型
 
-_Last updated: 2025-02-07 20:06:39_
+_Last updated: 2025-02-08 02:05:34_
 
 ---
 
@@ -43,7 +43,7 @@ _Last updated: 2025-02-07 20:06:39_
 # 大语言模型的工作流程
 
 
-![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/fd26e416-cc3e-44a7-b538-c284bc08aed9/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4663DIWCVN4%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T120554Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEFgaCXVzLXdlc3QtMiJGMEQCIB9edtNfEpeF3Q9SQbvp6pe%2FScwsL1WREQx%2BRFhgBc9OAiBzs%2BHp4n1rbE3ndf0%2FT9lhE14AeJ6AaBeHBG7AF6YWyir%2FAwhxEAAaDDYzNzQyMzE4MzgwNSIMQUDDz5dHAZZurGh%2FKtwDLP0Li1B%2Fp33Y8NyWeyLPwSTQZaAV9nnlNAf9x3MeJSmkKIZlN4CmQgJz9ILQApvbYK5qY%2BsSCk09Gox3lDaaqNxez%2BAII9KSEJNOVnek97g0ELnIWhNEXtO4jM38JpWEIpBIpS76GxvoJTOmuGhoSyomrLPQjNJ051iYtf6XWDLdrrPAQmYgqQ8qOOKDBt9VYmh1HZaL2k2f8H1yJykFCM0IO7hSs3JQYmISjzYEDIISurYeEra6S%2Bqu5d8OLgxF8URJoo9lZiX6l3t%2FVDMOM6rG%2FAl3TnzZNKenyALnWdeDWdOiOJ2pI9eT%2BUdepzbLa9xKO%2FM6ZgNE8N8m9CCSnJ50XaZePvOQbgg9P1%2BL%2BaEIEvWkOp%2FUwKeFdU%2B4paO2W59zkw2JlCck77ljXqUYDYLcaivA6TKBZ9M23jo58W9elGfhIEdDFN%2Fv3OQekBtjOg1v2YpuiUe%2FsliUPOOQ0T36BqBT7AbjT8fFEFDJey4TCTQxGlJ6x81juerROwIAp56m811yvdcZwPG0iNA%2F1sWwDXlNmXmCBilwD78zCzMn5rVKy5gODeEAmNx4EjcOQH7Y07Qe3u4EAYR10Nq4Wc09TKwsHy2N4COIFZD4%2B3IArLwBYLy3PJUuTVMwgfqWvQY6pgEWUm9Z%2FmD5EiXMYI0YJu4S5ZPVD1ybq8xfDksdyStqeDISS520mWCFF7LL%2FHvbf67kAg1D%2B0zlc2rOjXURh6fKcuIq44NBqzmmPJQ548xHkoWmw93aqYfAzyos%2BoivYSxVctWrEox2iHJPqAdpDAhyu%2BuYHblfqQJAL%2BMvz%2FfJ0ERQmH0JsKK4YxakfelNLRI7OvByAGpZqKZmvwPu%2BosijreOjmGs&X-Amz-Signature=f84056558aaeae547db8938dd962d16fc852294d7c808c5e57ca2f580ed6f230&X-Amz-SignedHeaders=host&x-id=GetObject)
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/fd26e416-cc3e-44a7-b538-c284bc08aed9/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466U2PN2FRT%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T180529Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGEaCXVzLXdlc3QtMiJIMEYCIQDHcpLp6VTwvG8UOx%2FtY3Om9iec9VQoXmYINWqfAHsYtgIhAK0T8cv%2Bs3ph%2F7rNNSYXrnv5ru408EiBpIGUZ%2F5U7tspKv8DCHoQABoMNjM3NDIzMTgzODA1Igy3q44zNlbKxabTChEq3APYHRgv9J3k8eEh%2F%2FgFttsbgJhAPz5A9Mot80A0P%2FlIX9jG%2FMR3EINnXRIp4DWP7U36dyPve7qv%2B19ZPdKts0y3JEfnd5BoFhx2JQi3oRujII4eyLQHc8O6ualryu2LLyEOoJcgSXp4uzDH1vq6HJ3FbmHlh8CkK%2FuTY6KhgPVHaqjB%2FIeXA3fjLOrwuQYxXhrTwBwEFH%2BKVZSxLdV%2F8NRrmM%2BSgci%2FdvWYaJeQtfakUNf%2BPKyMzN%2Fe3TcY2UNMP5%2BCFwmMuwITX0pK0CfeJ7KQdYy91r657HFA2IKwwSw6yplEKU4jPWIe7woTBiy5ZntmAwNeOObekEHq7zkykCMx0DNSbDWyynzxuGFXdBD0afR6JRdYjzLYrgWAfOrVKOU9mfEwUQ6EV%2Fw4CL8AH%2BNaOItSUtAV3jvzOGDlfkBk6VScMAQXGSQ46%2FDlD8dUKZKsHlNBsgRJLQttGBQ8Fetw8%2BC3lLetawQfWIr%2FbqFsJ1Y6NI%2FpWBaOviB4k114zcOMTU5CFGPndEW2dGKscp2YTUwIDNMHyP0D0ng5Pw4983Q4t%2BBlUHAX6yzDj6MtbUZxWxGX7e8%2FCdS6InNwVH6eREoyM9Z%2F2kbVG2g3eypSoCGox082yq7c6aoLojD%2F%2B5i9BjqkAU3h7%2Ft2Tr1hRHGZBg5ohohAJSHAt4X%2Fepa359eEBF84eE33b%2B0udaQRwUqMV4o9NZfCBWrdHR1w%2B8PFL%2FQLkdeMVEt4DHLjlpLAXKYsCGdeIvsFUK6pH28%2BVsRO7wfsw8%2FzV987ma%2FwsTthrURf2Yzp7nYIoTm%2BtCSmDgHWUMTU3aRQMwBfEmqALjAqCnOWWwQKOiWKk3%2FJPbcS8KRtupbEkZby&X-Amz-Signature=803f9eeac391c93ffde3b7dd1bda6cb863208628a22a7c237e8813e8c463bbf7&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
 大语言模型的工作流程主要包含以下几个关键步骤：
@@ -100,6 +100,29 @@ _Last updated: 2025-02-07 20:06:39_
 
 
 以下是大语言模型领域的一些重要概念：
+
+**AIGC (AI Generated Content)**：人工智能生成内容，指利用AI技术自动创作文本、图像、音频、视频等各类数字内容的技术和过程。它代表了内容创作的新范式，可以大规模、快速地生成高质量内容。
+
+
+**AGI (Artificial General Intelligence)**：通用人工智能，指具有与人类相似的通用智能，能够理解、学习和应用知识到各种不同任务的AI系统。这是人工智能发展的终极目标之一，目前尚未实现。
+
+
+**Agent**：智能代理，是一种能够自主执行任务、做出决策并与环境交互的AI系统。它可以理解用户意图，规划行动步骤，并通过调用各种工具和API来完成复杂任务。
+
+
+**Prompt**：提示词，是用户输入给AI模型的指令或上下文信息。好的prompt设计能够引导模型生成更准确、更符合需求的输出。这是与AI模型交互的关键接口。
+
+
+**GPT (Generative Pre-trained Transformer)**：生成式预训练转换器，是一种基于Transformer架构的大规模语言模型。它通过自监督学习在海量文本上预训练，能够理解和生成人类语言。
+
+
+**Token**：词元，是文本被分割成的最小单位，可能是单词、字符或子词。模型处理文本时会将输入转换为token序列，这是模型理解和生成文本的基础单位。
+
+
+**矢量/向量数据库**：一种专门存储和检索高维向量数据的数据库系统。在AI应用中，它主要用于存储文本、图像等数据的向量表示，支持相似性搜索和语义检索。
+
+
+**数据蒸馏**：一种模型压缩技术，通过将大型模型（教师模型）的知识转移到更小的模型（学生模型）中，在保持性能的同时减少模型规模和计算需求。
 
 
 这些概念反映了AI技术的不同方面，理解它们对于把握大语言模型的发展和应用至关重要。
