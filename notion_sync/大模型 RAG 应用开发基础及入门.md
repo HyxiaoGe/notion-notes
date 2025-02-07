@@ -1,22 +1,22 @@
 # 大模型 RAG 应用开发基础及入门
 
-_Last updated: 2025-02-07 20:06:39_
+_Last updated: 2025-02-08 02:05:34_
 
 ---
 
 # 大语言模型中的幻觉问题(上)
 
 
-## 什么是大语言模型的幻觉？
+# 什么是大语言模型的幻觉？
 
 
 大语言模型在处理自然语言时，有时候会出现”幻觉“现象。所谓幻觉，就是模型生成的内容与事实或上下文不一致的问题。这些问题会严重影响AI应用的可靠性和实用性。
 
 
-## 幻觉的两大类型
+# 幻觉的两大类型
 
 
-### 事实性幻觉
+# 事实性幻觉
 
 
 指模型生成的内容与实际事实不匹配。比如在回答"第一个登上月球的人是谁?"这个问题时:
@@ -29,7 +29,7 @@ _Last updated: 2025-02-07 20:06:39_
 这种幻觉之所以危险，是因为模型生成的内容看起来很可信，但实际上完全错误。
 
 
-### 忠实性幻觉
+# 忠实性幻觉
 
 
 指模型生成的内容与提供的上下文不一致。这种幻觉可以分为三类：
@@ -44,7 +44,7 @@ _Last updated: 2025-02-07 20:06:39_
 比如在总结新闻时，模型可能会添加原文中不存在的细节，或者前后描述矛盾。
 
 
-## 为什么会产生幻觉？
+# 为什么会产生幻觉？
 
 
 大语言模型产生幻觉的原因主要来自三个方面：
@@ -63,7 +63,7 @@ _Last updated: 2025-02-07 20:06:39_
     - 回答过于简略
     - 生成过程中的不完整推理
 
-## 如何评估幻觉问题
+# 如何评估幻觉问题
 
 
 为了客观评估模型的幻觉问题，我们可以使用多种方法：
@@ -82,10 +82,10 @@ _Last updated: 2025-02-07 20:06:39_
 # 大语言模型中的幻觉问题(下)：
 
 
-## RAG解决方案
+# RAG解决方案
 
 
-### RAG是什么？
+# RAG是什么？
 
 
 **RAG**（Retrieval-Augmented Generation）也叫**检索增强生成**，是指对大语言模型输出进行优化，使其能够参考并利用数据源之外的权威知识。简单来说，RAG就是从外部检索对应的知识内容，和用户的提问一起构成Prompt发给大模型，再让大模型生成内容。
@@ -103,10 +103,10 @@ _Last updated: 2025-02-07 20:06:39_
 简单来说：RAG = 外部知识检索 + Prompt构建 + LLM 生成
 
 
-![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/c4c615d5-19f1-4c9d-8caa-eee0f593fefc/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466TUDNAWMD%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T120628Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEFgaCXVzLXdlc3QtMiJHMEUCIQCYoZ7T0V9pNsKIiaZ3hIJpIAv8EBa0%2F1m%2BP4mkvZBk6gIgJZGFVn7ec380yqgLfKZT0SpXwHn8yspYOXni3P2KZkIq%2FwMIcRAAGgw2Mzc0MjMxODM4MDUiDCKEg%2B59SH8fNJsgXSrcA3NCnN76SsHFsPlAFdUe5d1smb8shN0jtXX4mOABmq0qpSdt8l6eZlz3WycLRHsHmRq7l5Fuo1ymSpla5vWH12SHAY9j3GgF6PtXo4dkTVFanfvy7S42ocOD4JgCG60NKYo%2FA2AG%2BocOW%2BvgBzy0EW9%2BWHtaSutp9BIavymYE%2F6jBrSDkD2q%2B3ylAAGKX2NufDObHgOBnp1Gq3SHRfJN0ygDLjagkyEh%2Bb4SM53gmG9hT%2BPZ3Uo4zJ1SVj0LeVKGHHJ8ooTSq8egMtybWyPdqQH3BftQAiVZ67X%2FjXjHB7nWBPOCUr6vvGEEdWeT9LdTOGmkytApEg9azokLkzYwK8MXfFFUAMd2ehFuCgn%2BiuoGtFGhXbAJaBFeFKl4OBVqQ9oXQHYuyszyDW%2FZiMU5kzHVAUgvzFXsk1ytun%2Bvyr%2FISPSYCZh4ZYqU3OFJNpEzW3P%2BCJwUXazZ7RDc5uyyJBwqbIhlxGuvswIts%2Bg8UxmE7TwuUXJ3JfKdSlXwCMOzDH1fuQ58lEJrn785VwKDzoRSXrRxsBwlAMup7XkO80AG31gDwSVxlHrSQc1nlqyM77pwWbCXoHZw%2Frd0%2FM3Wm0FGx6ip%2Fhov6xgjRMp5hUhIcDHgs%2Bb3TD5SDBqMMLb5lr0GOqUBmATgNiHsOJfzSdEEPaNFCYreTcSVewrYt59%2Bq614n%2B21vulWXKqRVX81LbHvxacG3J5Ly72iZg1qn58bj%2FkloaPYa2m0cctpKxp0y8CCWhcJwcuFnawB6Zlyeny%2F6Y9bkC%2BGahow%2F1muVxYb3hK6rrssxC73x0UvkfyWSYH3svY%2Bdjq4Dy91MNNWdjU9bRw86vkik1UqwD5vRz1KHz8lPpAPR8ue&X-Amz-Signature=b3a9a9cf7e91d468d1310ffe4d02867020586a5f8dfa96d0f2e826098f378e77&X-Amz-SignedHeaders=host&x-id=GetObject)
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/c4c615d5-19f1-4c9d-8caa-eee0f593fefc/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YU5CPTRA%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T180524Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGEaCXVzLXdlc3QtMiJIMEYCIQCoDdmNdo4mw6MWPJVviMXXyTGOj9qMb1nYZoLDqgIDcQIhAKPsy6XaOPVGq7zVndoHld9r1CP0fO1%2F2Bxll5FgZAq%2BKv8DCHoQABoMNjM3NDIzMTgzODA1Igy7d%2F5eHkD1EPEtoygq3AOd0GdIJQ9tub%2B2LzZ4TiCyK3qqC926LQLhDSI8EHZ0e5Z8fznxiIyCWNjFvAdo4TcMErqi9ZmOP2%2BsjPstVWwuChMLQxYcdPrvIMc%2BZ%2F0bMG1r6BSHVXMzGKpwaScciroIk%2BuiEnx9msVG6T03FZYaJy5bOnfEsY9SRCZCS35ncDEpJOTVt4MTlknAgPWoTaptRrkfPLVVMuxgl%2F4ae8IRt6YunCKVMx0Q4xWLnYuQcdyQfyhLQ7O7lTk4g%2F7mKy87%2BXy48a%2FxmvdOLPxXEn%2Ff8XxCoib3mZ3PZMBTC2skUXbQq6zD3lNGUWL%2FhTEFFjULV8cr4tbdUbX6XPLuI1JMXydC8BDmWKZfqHhlHTLC59bvq3IfU7ciRtr2QSay0gai2T2vDXOW7kzCiseiduZtJwm4lwn%2FTODMU0iMlvBI9fAz1U3NDwtOlgX%2Fr9Q5Dqb4Z6jw5mUxR7SXPhfmiKZiTbEX1S%2BXRkVY7o%2FCAV9W8G6phouNB8rvah15RLL1eFU5OtFRie8bOr5c%2Fak83SndM7LzDztCMoLrge6t%2Bx7baxpUkhPbAFuxf9Op6tYQDO7Rd7KSp2LHSeBpvGHJ7nf00M2NNPWwwJdPUFUjHFVmQNoY%2BaGNEZv5FiSJezC8%2FJi9BjqkAWtIWHCbGR2rWGzavZxvce6y7%2BJ%2FGUMlVfA0PmLRHJ7WtPUc09RqTYRfbYr7It%2Fs29F4kbfX6UajsdeZyxwyEWwI4znjLJkJrlp5Db1kBXGWeUepuLNVjsyKTJWEacHXoiNSKF4rI%2BlMohqe5kxSUxmyO1tHOQU9eSrZVxZTGBLG714Tep6%2FKSvuyZkkP%2BJkqVN8g6y5R7Ic%2BzXRVMAjomkLZnwe&X-Amz-Signature=c1d8d165633a1c01d8e9d72246912fb939eec0821194ac8ab78e3b99d6d1b72a&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
-### 为什么需要RAG？
+# 为什么需要RAG？
 
 
 LLM虽然是一个强大的工具，但它本身拒绝了解任何时事，且它给出的答案总是非常流畅，内容却不一定靠谱。这存在几个主要的问题:
@@ -129,7 +129,7 @@ LLM虽然是一个强大的工具，但它本身拒绝了解任何时事，且�
 
 - **增强用户信任度**：RAG允许LLM通过来源归属来呈现具体的信息，输出可以包括对来源的引文或参考，这可以增加对对话的生成式人工智能解决方案的任何信心
 
-### RAG是如何工作的？
+# RAG是如何工作的？
 
 
 RAG采用三种主要的检索方式：
@@ -150,10 +150,10 @@ RAG采用三种主要的检索方式：
     - 然后检索验证
     - 对答案进行修正
 
-![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/4686426d-2314-4f87-ba63-abeb1a60669f/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466TUDNAWMD%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T120628Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEFgaCXVzLXdlc3QtMiJHMEUCIQCYoZ7T0V9pNsKIiaZ3hIJpIAv8EBa0%2F1m%2BP4mkvZBk6gIgJZGFVn7ec380yqgLfKZT0SpXwHn8yspYOXni3P2KZkIq%2FwMIcRAAGgw2Mzc0MjMxODM4MDUiDCKEg%2B59SH8fNJsgXSrcA3NCnN76SsHFsPlAFdUe5d1smb8shN0jtXX4mOABmq0qpSdt8l6eZlz3WycLRHsHmRq7l5Fuo1ymSpla5vWH12SHAY9j3GgF6PtXo4dkTVFanfvy7S42ocOD4JgCG60NKYo%2FA2AG%2BocOW%2BvgBzy0EW9%2BWHtaSutp9BIavymYE%2F6jBrSDkD2q%2B3ylAAGKX2NufDObHgOBnp1Gq3SHRfJN0ygDLjagkyEh%2Bb4SM53gmG9hT%2BPZ3Uo4zJ1SVj0LeVKGHHJ8ooTSq8egMtybWyPdqQH3BftQAiVZ67X%2FjXjHB7nWBPOCUr6vvGEEdWeT9LdTOGmkytApEg9azokLkzYwK8MXfFFUAMd2ehFuCgn%2BiuoGtFGhXbAJaBFeFKl4OBVqQ9oXQHYuyszyDW%2FZiMU5kzHVAUgvzFXsk1ytun%2Bvyr%2FISPSYCZh4ZYqU3OFJNpEzW3P%2BCJwUXazZ7RDc5uyyJBwqbIhlxGuvswIts%2Bg8UxmE7TwuUXJ3JfKdSlXwCMOzDH1fuQ58lEJrn785VwKDzoRSXrRxsBwlAMup7XkO80AG31gDwSVxlHrSQc1nlqyM77pwWbCXoHZw%2Frd0%2FM3Wm0FGx6ip%2Fhov6xgjRMp5hUhIcDHgs%2Bb3TD5SDBqMMLb5lr0GOqUBmATgNiHsOJfzSdEEPaNFCYreTcSVewrYt59%2Bq614n%2B21vulWXKqRVX81LbHvxacG3J5Ly72iZg1qn58bj%2FkloaPYa2m0cctpKxp0y8CCWhcJwcuFnawB6Zlyeny%2F6Y9bkC%2BGahow%2F1muVxYb3hK6rrssxC73x0UvkfyWSYH3svY%2Bdjq4Dy91MNNWdjU9bRw86vkik1UqwD5vRz1KHz8lPpAPR8ue&X-Amz-Signature=e42871b385234dc6780a982827934b7bef3d21c1ff62a7c1cc447d646a822c69&X-Amz-SignedHeaders=host&x-id=GetObject)
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/4686426d-2314-4f87-ba63-abeb1a60669f/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YU5CPTRA%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T180524Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGEaCXVzLXdlc3QtMiJIMEYCIQCoDdmNdo4mw6MWPJVviMXXyTGOj9qMb1nYZoLDqgIDcQIhAKPsy6XaOPVGq7zVndoHld9r1CP0fO1%2F2Bxll5FgZAq%2BKv8DCHoQABoMNjM3NDIzMTgzODA1Igy7d%2F5eHkD1EPEtoygq3AOd0GdIJQ9tub%2B2LzZ4TiCyK3qqC926LQLhDSI8EHZ0e5Z8fznxiIyCWNjFvAdo4TcMErqi9ZmOP2%2BsjPstVWwuChMLQxYcdPrvIMc%2BZ%2F0bMG1r6BSHVXMzGKpwaScciroIk%2BuiEnx9msVG6T03FZYaJy5bOnfEsY9SRCZCS35ncDEpJOTVt4MTlknAgPWoTaptRrkfPLVVMuxgl%2F4ae8IRt6YunCKVMx0Q4xWLnYuQcdyQfyhLQ7O7lTk4g%2F7mKy87%2BXy48a%2FxmvdOLPxXEn%2Ff8XxCoib3mZ3PZMBTC2skUXbQq6zD3lNGUWL%2FhTEFFjULV8cr4tbdUbX6XPLuI1JMXydC8BDmWKZfqHhlHTLC59bvq3IfU7ciRtr2QSay0gai2T2vDXOW7kzCiseiduZtJwm4lwn%2FTODMU0iMlvBI9fAz1U3NDwtOlgX%2Fr9Q5Dqb4Z6jw5mUxR7SXPhfmiKZiTbEX1S%2BXRkVY7o%2FCAV9W8G6phouNB8rvah15RLL1eFU5OtFRie8bOr5c%2Fak83SndM7LzDztCMoLrge6t%2Bx7baxpUkhPbAFuxf9Op6tYQDO7Rd7KSp2LHSeBpvGHJ7nf00M2NNPWwwJdPUFUjHFVmQNoY%2BaGNEZv5FiSJezC8%2FJi9BjqkAWtIWHCbGR2rWGzavZxvce6y7%2BJ%2FGUMlVfA0PmLRHJ7WtPUc09RqTYRfbYr7It%2Fs29F4kbfX6UajsdeZyxwyEWwI4znjLJkJrlp5Db1kBXGWeUepuLNVjsyKTJWEacHXoiNSKF4rI%2BlMohqe5kxSUxmyO1tHOQU9eSrZVxZTGBLG714Tep6%2FKSvuyZkkP%2BJkqVN8g6y5R7Ic%2BzXRVMAjomkLZnwe&X-Amz-Signature=b4c15b1dcaa892eb93f78c6c3cfc71ac5abda4ad55f65c5a59fc8a2f9f580dc2&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
-### RAG实战示例
+# RAG实战示例
 
 
 以一个简单的问答场景为例，展示RAG的实际应用流程:
@@ -169,16 +169,16 @@ RAG采用三种主要的检索方式：
 
 3. 最终输出:包含准确的产品信息，并且所有信息都可以溯源。
 
-## AI应用开发利器：向量数据库详解
+# AI应用开发利器：向量数据库详解
 
 
-### 什么是向量数据库？
+# 什么是向量数据库？
 
 
 向量数据库（Vector Database）是一种专门用于存储和处理向量数据的数据库系统。它不同于传统的关系型数据库，因为它需要将所有数据映射为特定的向量格式，并采用相似性搜索作为主要的检索方式。
 
 
-### 一个生动的例子：识别猫咪
+# 一个生动的例子：识别猫咪
 
 
 让我们通过一个识别猫咪的例子来理解向量数据库。假设我们有一组不同品种的猫咪图片：
@@ -215,7 +215,7 @@ RAG采用三种主要的检索方式：
 
 - 耳朵形状等等
 
-### 向量数据库的优势
+# 向量数据库的优势
 
 
 与传统的数据库相比，向量数据库有以下特点：
@@ -237,7 +237,7 @@ RAG采用三种主要的检索方式：
     - 传统数据库：精确查找/范围查找
     - 向量数据库：近似查找，查询结果是与输入向量最相似的向量
 
-### 相似性抖索算法
+# 相似性搜索算法
 
 
 在向量数据库中，支持通过多种方式来计算两个向量的相似度：
@@ -262,10 +262,10 @@ distance(A,B) = √∑(Ai-Bi)²
 例如下图：左侧就是`欧式距离`，右侧就是`余弦相似度`。
 
 
-![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/5ffcc1e2-d42e-43e1-8304-359cfa6e287b/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466TUDNAWMD%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T120628Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEFgaCXVzLXdlc3QtMiJHMEUCIQCYoZ7T0V9pNsKIiaZ3hIJpIAv8EBa0%2F1m%2BP4mkvZBk6gIgJZGFVn7ec380yqgLfKZT0SpXwHn8yspYOXni3P2KZkIq%2FwMIcRAAGgw2Mzc0MjMxODM4MDUiDCKEg%2B59SH8fNJsgXSrcA3NCnN76SsHFsPlAFdUe5d1smb8shN0jtXX4mOABmq0qpSdt8l6eZlz3WycLRHsHmRq7l5Fuo1ymSpla5vWH12SHAY9j3GgF6PtXo4dkTVFanfvy7S42ocOD4JgCG60NKYo%2FA2AG%2BocOW%2BvgBzy0EW9%2BWHtaSutp9BIavymYE%2F6jBrSDkD2q%2B3ylAAGKX2NufDObHgOBnp1Gq3SHRfJN0ygDLjagkyEh%2Bb4SM53gmG9hT%2BPZ3Uo4zJ1SVj0LeVKGHHJ8ooTSq8egMtybWyPdqQH3BftQAiVZ67X%2FjXjHB7nWBPOCUr6vvGEEdWeT9LdTOGmkytApEg9azokLkzYwK8MXfFFUAMd2ehFuCgn%2BiuoGtFGhXbAJaBFeFKl4OBVqQ9oXQHYuyszyDW%2FZiMU5kzHVAUgvzFXsk1ytun%2Bvyr%2FISPSYCZh4ZYqU3OFJNpEzW3P%2BCJwUXazZ7RDc5uyyJBwqbIhlxGuvswIts%2Bg8UxmE7TwuUXJ3JfKdSlXwCMOzDH1fuQ58lEJrn785VwKDzoRSXrRxsBwlAMup7XkO80AG31gDwSVxlHrSQc1nlqyM77pwWbCXoHZw%2Frd0%2FM3Wm0FGx6ip%2Fhov6xgjRMp5hUhIcDHgs%2Bb3TD5SDBqMMLb5lr0GOqUBmATgNiHsOJfzSdEEPaNFCYreTcSVewrYt59%2Bq614n%2B21vulWXKqRVX81LbHvxacG3J5Ly72iZg1qn58bj%2FkloaPYa2m0cctpKxp0y8CCWhcJwcuFnawB6Zlyeny%2F6Y9bkC%2BGahow%2F1muVxYb3hK6rrssxC73x0UvkfyWSYH3svY%2Bdjq4Dy91MNNWdjU9bRw86vkik1UqwD5vRz1KHz8lPpAPR8ue&X-Amz-Signature=ae48687b4df024cc1886944c8cdde9b7661709b75212b92374efe00025e01aa7&X-Amz-SignedHeaders=host&x-id=GetObject)
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/5ffcc1e2-d42e-43e1-8304-359cfa6e287b/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YU5CPTRA%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T180524Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGEaCXVzLXdlc3QtMiJIMEYCIQCoDdmNdo4mw6MWPJVviMXXyTGOj9qMb1nYZoLDqgIDcQIhAKPsy6XaOPVGq7zVndoHld9r1CP0fO1%2F2Bxll5FgZAq%2BKv8DCHoQABoMNjM3NDIzMTgzODA1Igy7d%2F5eHkD1EPEtoygq3AOd0GdIJQ9tub%2B2LzZ4TiCyK3qqC926LQLhDSI8EHZ0e5Z8fznxiIyCWNjFvAdo4TcMErqi9ZmOP2%2BsjPstVWwuChMLQxYcdPrvIMc%2BZ%2F0bMG1r6BSHVXMzGKpwaScciroIk%2BuiEnx9msVG6T03FZYaJy5bOnfEsY9SRCZCS35ncDEpJOTVt4MTlknAgPWoTaptRrkfPLVVMuxgl%2F4ae8IRt6YunCKVMx0Q4xWLnYuQcdyQfyhLQ7O7lTk4g%2F7mKy87%2BXy48a%2FxmvdOLPxXEn%2Ff8XxCoib3mZ3PZMBTC2skUXbQq6zD3lNGUWL%2FhTEFFjULV8cr4tbdUbX6XPLuI1JMXydC8BDmWKZfqHhlHTLC59bvq3IfU7ciRtr2QSay0gai2T2vDXOW7kzCiseiduZtJwm4lwn%2FTODMU0iMlvBI9fAz1U3NDwtOlgX%2Fr9Q5Dqb4Z6jw5mUxR7SXPhfmiKZiTbEX1S%2BXRkVY7o%2FCAV9W8G6phouNB8rvah15RLL1eFU5OtFRie8bOr5c%2Fak83SndM7LzDztCMoLrge6t%2Bx7baxpUkhPbAFuxf9Op6tYQDO7Rd7KSp2LHSeBpvGHJ7nf00M2NNPWwwJdPUFUjHFVmQNoY%2BaGNEZv5FiSJezC8%2FJi9BjqkAWtIWHCbGR2rWGzavZxvce6y7%2BJ%2FGUMlVfA0PmLRHJ7WtPUc09RqTYRfbYr7It%2Fs29F4kbfX6UajsdeZyxwyEWwI4znjLJkJrlp5Db1kBXGWeUepuLNVjsyKTJWEacHXoiNSKF4rI%2BlMohqe5kxSUxmyO1tHOQU9eSrZVxZTGBLG714Tep6%2FKSvuyZkkP%2BJkqVN8g6y5R7Ic%2BzXRVMAjomkLZnwe&X-Amz-Signature=76aec97fdb6fee9a6a545aa51ac1c4a24d61f6e56c5374d05241c79178bf4a82&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
-### 实际应用场景
+# 实际应用场景
 
 
 向量数据库的主要应用场景包括：
@@ -285,10 +285,10 @@ distance(A,B) = √∑(Ai-Bi)²
 在RAG中，我们会将文档的知识按特定规则分成小块，转换成向量存储到向量数据库中。当人类提问时，我们将问题转换为向量，在数据库中找到最相似的文本块，这些文本块可以成为Prompt的补充内容。
 
 
-## 深入理解Embedding嵌入技术
+# 深入理解Embedding嵌入技术
 
 
-### Embedding 是什么？
+# Embedding 是什么？
 
 
 Embedding(嵌入)是一种在机器学习中广泛使用的技术，它能将文本、图片、视频等非结构化数据映射到向量空间中。一个Embedding向量通常是一个包含N个浮点数的数组，这个向量不仅表示了数据的特征，更重要的是通过学习可以表达它们的内在语义。
