@@ -285,32 +285,66 @@ class ContentConvert:
             if block_type == 'paragraph':
                 # 先处理段落本身
                 text = self._convert_rich_text(block_data.get('rich_text', []))
-                result = f"{text}\n\n" if text else ''
+                result = ''
+
+                if text:
+                    result = f"{text}\n\n"
 
                 if block.get('has_children') and 'children' in block:
+                    child_results = []
                     for child in block['children']['results']:
                         child_content = self._convert_block(child)
                         if child_content:
-                            result += child_content
+                            child_results.append(child_content)
+
+                    if child_results:
+                        result += "\n".join(child_results)
+
+                    if not result.endswith('\n\n'):
+                        result += '\n\n'
 
                 return result
             elif block_type == 'heading_1':
                 # 处理一级标题
                 if 'rich_text' in block_data:
-                    text = self._convert_rich_text(block_data['rich_text'])
-                    return f"# {text}\n\n"
+                    text = self._convert_rich_text(block_data.get('rich_text', []))
+                    content = f"# {text}\n\n"
+
+                    # 处理子内容
+                    if block.get('has_children') and 'children' in block:
+                        for child in block['children']['results']:
+                            child_content = self._convert_block(child)
+                            if child_content:
+                                content += child_content
+                    return content
 
             elif block_type == 'heading_2':
                 # 处理二级标题
                 if 'rich_text' in block_data:
-                    text = self._convert_rich_text(block_data['rich_text'])
-                    return f"## {text}\n\n"
+                    text = self._convert_rich_text(block_data.get('rich_text', []))
+                    content = f"# {text}\n\n"
+
+                    # 处理子内容
+                    if block.get('has_children') and 'children' in block:
+                        for child in block['children']['results']:
+                            child_content = self._convert_block(child)
+                            if child_content:
+                                content += child_content
+                    return content
 
             elif block_type == 'heading_3':
                 # 处理三级标题
                 if 'rich_text' in block_data:
-                    text = self._convert_rich_text(block_data['rich_text'])
-                    return f"### {text}\n\n"
+                    text = self._convert_rich_text(block_data.get('rich_text', []))
+                    content = f"# {text}\n\n"
+
+                    # 处理子内容
+                    if block.get('has_children') and 'children' in block:
+                        for child in block['children']['results']:
+                            child_content = self._convert_block(child)
+                            if child_content:
+                                content += child_content
+                    return content
 
             elif block_type == 'code':
                 # 处理代码块
@@ -324,6 +358,11 @@ class ContentConvert:
                 # 处理引用
                 text = self._convert_rich_text(block_data['rich_text'])
                 return f"> {text}\n\n"
+
+            elif block_type == 'table':
+                table_data = block.get('table', {})
+                children = block.get('children', {}).get('results', [])
+                return self._handle_table(table_data, block['id'], children)
 
             return ""
 
@@ -371,9 +410,8 @@ class ContentConvert:
             return "Untitled"
 
     def _handle_table(self, data: Dict, block_id: str, children: List[Dict]) -> str:
-        """处理表格，包括表头和对齐方式"""
         if not children:
-            return "<!-- Empty table -->\n"
+            return ""
 
         # 获取表格行数据
         rows = []
@@ -383,39 +421,39 @@ class ContentConvert:
             if row['type'] != 'table_row':
                 continue
 
+            # 处理每个单元格
             cells = []
             for cell in row['table_row']['cells']:
                 cell_text = self._convert_rich_text(cell)
-                # 转义表格中的管道符号
-                cell_text = cell_text.replace('|', '\\|')
-                cells.append(cell_text)
+                # 转义|字符
+                cell_text = cell_text.replace('|', '\\|') if cell_text else ''
+                cells.append(cell_text.strip())
 
-            if header_row is None:
+            if not header_row:
                 header_row = cells
             else:
                 rows.append(cells)
 
         if not header_row:
-            return "<!-- Invalid table structure -->\n"
+            return ""
 
         # 构建Markdown表格
-        markdown_lines = []
+        table = []
 
-        # 添加表头
-        markdown_lines.append("| " + " | ".join(header_row) + " |")
+        # 表头
+        table.append('| ' + ' | '.join(header_row) + ' |')
 
-        # 添加对齐行
-        align_row = ["---"] * len(header_row)
-        markdown_lines.append("| " + " | ".join(align_row) + " |")
+        # 分隔行
+        table.append('| ' + ' | '.join(['---'] * len(header_row)) + ' |')
 
-        # 添加数据行
+        # 数据行
         for row in rows:
-            # 确保每行的列数与表头一致
+            # 确保列数对齐
             while len(row) < len(header_row):
-                row.append("")
-            markdown_lines.append("| " + " | ".join(row) + " |")
+                row.append('')
+            table.append('| ' + ' | '.join(row) + ' |')
 
-        return "\n".join(markdown_lines) + "\n\n"
+        return '\n'.join(table) + '\n\n'
 
 class SyncLogger:
     """同步日志管理器"""
