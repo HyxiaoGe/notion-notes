@@ -1,6 +1,6 @@
 # LangChain RAG 应用开发优化策略详解
 
-_Last updated: 2025-02-09 20:05:43_
+_Last updated: 2025-02-10 02:04:37_
 
 ---
 
@@ -468,5 +468,7 @@ def evaluate_retrieval(retriever, test_queries, ground_truth):
 # 优化路径建议
 
 
-**循序渐进的优化路线**
-
+1. **基础阶段**
+    - 实现基本的RAG流程
+    - 优化向量检索参数
+    - 改进提示词设计
