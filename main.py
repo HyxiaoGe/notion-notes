@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 import os
 import sys
@@ -98,6 +99,8 @@ class ContentConvert:
         self.processed_pages = set()  # 用于追踪已处理的页面
         self.page_map = {}  # 保存页面ID到文件路径的映射
 
+        self.logger = SyncLogger()
+
     def convert_workspace(self, root_page: Dict, base_path: str) -> List[Tuple[str, str]]:
         """转换整个工作区"""
         self.processed_pages.clear()
@@ -106,11 +109,50 @@ class ContentConvert:
         # 创建根目录
         os.makedirs(base_path, exist_ok=True)
 
-        # 获取根页面信息
-        page = root_page["page"]
-        title = page['properties']['title']['title'][0]['plain_text']
-
         return self._process_page_recursively(root_page, base_path, [])
+
+    def save_notion_debug_info(self, notion_data: Dict, file_path: str) -> None:
+        """
+        保存Notion API的原始返回数据用于debug
+
+        Args:
+            notion_data: Notion API返回的原始数据
+            file_path: 转换后要保存的文件路径
+        """
+        try:
+            # 创建debug目录
+            debug_dir = "notion_debug"
+            os.makedirs(debug_dir, exist_ok=True)
+
+            # 生成debug文件名
+            page_id = notion_data['page']['id']
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            debug_filename = f"{page_id}_{timestamp}.json"
+            debug_filepath = os.path.join(debug_dir, debug_filename)
+
+            # 准备debug信息
+            debug_info = {
+                "timestamp": timestamp,
+                "page_id": page_id,
+                "target_file": file_path,  # 最终要同步到GitHub的文件路径
+                "notion_data": notion_data  # 完整的API返回数据
+            }
+
+            # 保存为JSON文件
+            with open(debug_filepath, 'w', encoding='utf-8') as f:
+                json.dump(debug_info, f, ensure_ascii=False, indent=2)
+
+            # 创建索引文件
+            index_path = os.path.join(debug_dir, "index.md")
+            index_line = f"- {timestamp} | {page_id} | {file_path} | {debug_filename}\n"
+
+            with open(index_path, 'a', encoding='utf-8') as f:
+                f.write(index_line)
+
+            self.logger.info(f"Debug info saved to {debug_filepath}")
+
+        except Exception as e:
+            self.logger.error(f"Failed to save debug info: {str(e)}")
 
     def _process_page_recursively(self, page_data: Dict, base_path: str, path_components: List[str]) -> List[
         Tuple[str, str]]:
@@ -118,6 +160,7 @@ class ContentConvert:
         try:
             page = page_data['page']
             page_id = page['id']
+            last_edited_time = page.get('last_edited_time')
 
             if page_id in self.processed_pages:
                 return []
@@ -130,16 +173,14 @@ class ContentConvert:
 
             # 构建相对路径
             current_path = os.path.join(base_path, *path_components)
-
-            # 创建目录（仅当不存在时）
             os.makedirs(current_path, exist_ok=True)
-
-            # 构建文件完整路径
             file_path = os.path.join(current_path, file_name)
+
+            self.save_notion_debug_info(page_data, file_path)
 
             # 转换内容
             content = self._convert_page_content(page_data)
-            results = [(file_path, content)]
+            results = [(file_path, content, page_id, last_edited_time)]
 
             # 处理子页面
             if 'blocks' in page_data:
@@ -492,7 +533,45 @@ class NotionGitSync:
 
         self.converter = ContentConvert()
 
+        self.sync_status_file = "sync_status.json"
+        self.last_sync_times = self._load_sync_status()
+
         self.logger.info("NotionGitSync initialized")
+
+    def _load_sync_status(self) -> dict:
+        """加载上次同步状态"""
+        try:
+            if os.path.exists(self.sync_status_file):
+                with open(self.sync_status_file, 'r') as f:
+                    return json.load(f)
+            return {}
+        except Exception as e:
+            self.logger.error(f"Error loading sync status: {str(e)}")
+            return {}
+
+    def _save_sync_status(self):
+        """保存同步状态"""
+        try:
+            with open(self.sync_status_file, 'w') as f:
+                json.dump(self.last_sync_times, f)
+        except Exception as e:
+            self.logger.error(f"Error saving sync status: {str(e)}")
+
+    def _needs_update(self, page_id: str, last_edited_time: str) -> bool:
+        """检查页面是否需要更新"""
+        # 如果是首次同步,需要更新
+        if page_id not in self.last_sync_times:
+            return True
+
+        # 比较时间戳
+        try:
+            last_sync = datetime.fromisoformat(self.last_sync_times[page_id].replace('Z', '+00:00'))
+            current_edit = datetime.fromisoformat(last_edited_time.replace('Z', '+00:00'))
+            return current_edit > last_sync
+        except Exception as e:
+            self.logger.error(f"Error comparing timestamps: {str(e)}")
+            # 发生错误时保守处理,执行更新
+            return True
 
     @retry(stop_max_attempt_number=3, wait_fixed=2000)
     def get_notion_content(self):
@@ -545,7 +624,12 @@ class NotionGitSync:
             self.logger.error(f"Error getting blocks for {block_id}: {str(e)}")
             return blocks
 
-    def update_github(self, file_path: str, content: str):
+    def update_github(self, file_path: str, content: str, page_id: str, last_edited_time: str):
+        # 检查是否需要更新
+        if not self._needs_update(page_id, last_edited_time):
+            self.logger.info(f"Content not changed for {file_path}, skipping update")
+            return
+
         try:
             repo = self.github.get_repo(self.config.github_repo)
 
@@ -553,18 +637,6 @@ class NotionGitSync:
             file_path = file_path.replace(os.sep, '/')
             if not file_path.startswith('notion_sync/'):
                 file_path = f"notion_sync/{file_path}"
-
-            # 确保父目录存在
-            dir_path = os.path.dirname(file_path)
-            try:
-                repo.get_contents(dir_path)
-            except:
-                # 创建父目录
-                repo.create_file(
-                    f"{dir_path}/README.md",
-                    f"Create directory {dir_path}",
-                    f"# {os.path.basename(dir_path)}\n"
-                )
 
             # 更新或创建文件
             try:
@@ -585,6 +657,10 @@ class NotionGitSync:
                 )
                 self.logger.info(f"Created file {file_path}")
                 self._update_sync_log(repo, "create", file_path)
+
+            # 更新同步状态
+            self.last_sync_times[page_id] = last_edited_time
+            self._save_sync_status()
 
         except Exception as e:
             self.logger.error(f"Error updating Github: {str(e)}")
