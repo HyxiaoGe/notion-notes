@@ -1,13 +1,13 @@
 # LangChain初入门
 
-_Last updated: 2025-02-07 20:06:39_
+_Last updated: 2025-02-12 20:06:57_
 
 ---
 
 不同LLM模型之间的输入输出结构存在差异，这些差异会导致开发者需要频繁修改代码，降低代码的可维护性。为了解决这个问题，Langchain应用框架应运而生。
 
 
-## 为什么选择LangChain
+# 为什么选择LangChain
 
 
 LangChain作为一个强大的框架，具有以下优势：
@@ -21,13 +21,13 @@ LangChain作为一个强大的框架，具有以下优势：
 
 - **内存管理**：提供了多种记忆组件，使应用能够保持上下文连贯性。
 
-## LangChain简介
+# LangChain简介
 
 
 LangChain是一个用于开发由语言模型驱动的应用程序的框架。
 
 
-### 核心组件
+# 核心组件
 
 
 - **Models (模型)**：提供与大语言模型的统一交互接口，支持各类LLM、聊天模型和文本嵌入模型的调用
@@ -42,7 +42,7 @@ LangChain是一个用于开发由语言模型驱动的应用程序的框架。
 
 - **Agents (代理)**：赋予LLM使用工具的能力，支持自主推理和行动决策
 
-![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/7c5c69d7-7584-4b18-93ac-72f0968bfd6b/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB46625Q4Z5T2%2F20250207%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250207T120612Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEFgaCXVzLXdlc3QtMiJHMEUCICThSL0RlMbPt9TeGOOvWmBM3bXK4J7DyBqiacGNZmvVAiEAzqtmf%2FwC%2FdfkyeZMImqBeIhrA9BPae6DMn27ZpMP1%2FQq%2FwMIcRAAGgw2Mzc0MjMxODM4MDUiDNqBEUSnU1FEAlzxAyrcA3L06YZMmdJ3uXMuWqg1ZaXVaVTAyKburGJRs3KFYNT84efaRn20Vh1EwSZn%2BZRLl5zctH0R5WYp5nGc2XD%2Fytn%2FykkGkJhf%2BljjlZ3PEfdEY60EwD%2BwS%2BBxrCJa%2B6fNIsg%2FOSSRJ6z6TE7Ym5S8jsVQQhRfGF9n%2BWmGihxtrac72D730L4F5C41j2ZRTJoPKaoX1B23z3JPk86wSBgswAf%2FVJd1vX3eN9hk81OBq%2BJnIHCni5GzNdiKaTIZx1aN%2F2tWs3pY%2BEnufgwimYqiYkjN9y%2Bl449wvdDgbfAqLSxB8fNfdhKfTJJEvC6rbmfap4AYiYNBszLrecQh3PJfioec22%2FlI2%2FCBsgN6ENG8DSzd%2Ft%2FMfKqjvnO3im5cvnTzy71mYz8MnKq%2BSGdhNMB5aEFHVhXoOTnOwmUoE%2F2LvoQqms4iMKAojZRi%2Fe%2FYzY5ssxKPns%2FesIKEHpGx7se9lz5PuOU9W4qtJ2reHkbhOMlYw18BjhWf%2BSe%2FIdyoFMwQ%2BvRuWi7BwgP%2BPIRlorMv4yfCrgrkyInPXmZBIyA%2FgF8tgtYbQbpNtB9cxLBjxV%2FccAURBmlZyjFFezsqK5RWRzloppi9fYtuAU0%2BrpXljnYAwukoD%2F4TA%2FtFEDKMJH6lr0GOqUBwbjr%2BlYly61iJyhQx2tknfHERDLx1SXatcID4E0Xi%2FHkkEYrngwIC4j4uFvDPc%2BGGtWE1MsnfjN689pqym4ZGaXscYEs4Xs%2FpxtcusxFe2r1Nnl590%2FQJ6iXBIdOsYQw8QKU%2B9bKWarPZXCek%2B85m3BeDLvtcNcu%2BAuk%2BI9EYHSM%2FlgMnauekA%2BPy%2BTsPTu9iwjCQYULBLkYQT%2BEp8tfDEP6OsPb&X-Amz-Signature=4e84d1b9ef594a6aa7d81ebf506a40d46e282bb5140a53630bf7265c67ed02b5&X-Amz-SignedHeaders=host&x-id=GetObject)
+![image](https://prod-files-secure.s3.us-west-2.amazonaws.com/4d514fab-2492-4877-a269-a017b8992bb6/7c5c69d7-7584-4b18-93ac-72f0968bfd6b/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XVZKJDSB%2F20250212%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250212T120622Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEM%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCA308EVRoBlOFipLWhWK5d37uoDwZ94rdE6zsWW%2B%2FBPgIgPLXcJ%2Bn%2BPsdxy4gVOggixe1k9K5Yso70Gk6PjiKX3x4qiAQI6P%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDJO0ZWKHOOwsu7iZDCrcA9Y9NxgKvCEru4E83Y5QEPV648Fac%2BO7d7YNK8cR3GNDqGPOrsVR4H4hCH%2BG%2BdfHQ2pUZINfsFjC66YVs8ecPJSrh4zQk8W7zi7uLkBbZYWwuno3vyviPyOip0Fht6Fddb9SVT%2BP8bOcb5xcw0auQRpWIuZT7tm28CPe3N11X%2BK4GZF80tEMVx47SBEgKW6WOOhjJjpj1ZCyFicBM19MvqjjZ3C980k7B%2FjjZu8R0nuxrPLYu5ez6qHw2ywmAT%2BntMDjMJkLYD15FKT%2Fog7xbgBvgkTRa8SOj0Mnm1%2BPB5rlCi8rgBlmFWcwRJ8B3lRNq7wHXi9L32w5s4zA%2BPONCsltl04FI2LVxkiC%2FAlUq0XUHvGFkY2mqCicDJpcCX9ueI8guVsh4CR46NzwiCTg165XJWx4jHiC4X%2FlGNGHLuNhIZvJwkwam0fgfM4nuITXqWj6rC1C1vf3brc%2FKLPjt5q0eXjkth6aNNZ96jc0mDgpQOKyyq%2F9XhvtB3BlhhEFhsh1nOcvP0bsVp9kdRWX3O5axr6bkEFYROrTg2UJPo88oRLvwyLZIYhXC5SNL5eZ4OxOEQTUjLH2quURSqHCX%2B5h7bN9S1jY7Ael6qvzxeq6F6WMwBQ4m5AZsL6SMMGGsb0GOqUBN7TmZXG994Oxr%2B2WqMMxhCDAV%2FcRrfnmaNE7zzMVflzKLrNkklJ9n7GV4DUBK18KZVY9cd5AihAFWJPrgFwLVCKWzBKkeq0EQAFc%2BFHvlw3Sy%2BnNpZsDlw5QLmZsvLxAOYiCC%2FcOHEdydyZDGBu8CEP0Xd0EMlclpk5FNTwMF3QkLfskyruud2lP%2BRUj%2BJlgS%2FnRbpfgjHH7MIvEK%2BhF9s9JwMEs&X-Amz-Signature=0f9581fdc1c4a05df9c249a4195c5cd5277df475b8c0ebec5bc194987c87bbba&X-Amz-SignedHeaders=host&x-id=GetObject)
 
 
 **Prompts组件介绍**
@@ -197,34 +197,51 @@ pipeline_prompt = PipelinePromptTemplate(
 
 Models是LangChain的核心组件，提供了一个标准接口来封装不同类型的LLM进行交互，LangChain本身不提供LLM,而是提供了接口来集成各种模型。
 
+
 LangChain支持两种类型的模型:
 
+
 - LLM: 使用纯文本作为输入和输出的大语言模型
+
 - Chat Model: 使用聊天消息列表作为输入并返回聊天消息的聊天模型
+
+
 
 **组件架构**
 
 LangChain中Models组件的基类结构如下:
+
 
 BaseLanguageModel(基类)
 
 - BaseLLM(大语言模型基类)
     - SimpleLLM(简化大语言模型)
     - 第三方LLM集成(OpenAI、百度文心等)
+
 - BaseChatModel(聊天模型基类)
     - SimpleChatModel(简化聊天模型)
     - 第三方Chat Model集成
+
+
+
 Message组件类型:
 
 - SystemMessage: 系统消息
+
 - HumanMessage: 人类消息
+
 - AIMessage: AI消息
+
 - FunctionMessage: 函数调用消息
+
 - ToolMessage: 工具调用消息
+
+
 
 **核心办法**
 
 Models组件提供了几个关键方法:
+
 
 invoke/invoke_sync: 调用模型生成内容
 
@@ -238,6 +255,7 @@ async def generate():
     response = await llm.ainvoke("你好!")
 ```
 
+
 batch/abatch: 批量调用处理多个输入
 
 ```python
@@ -247,6 +265,7 @@ messages = [
 ]
 responses = llm.batch(messages)
 ```
+
 
 stream/astream: 流式返回生成内容
 
@@ -260,6 +279,7 @@ for chunk in response:
 **Message组件使用**
 
 消息组件用于构建与聊天模型的交互:
+
 
 ```python
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -280,6 +300,7 @@ response = chat_model.invoke(messages)
 **实践示例**
 
 基本对话示例：
+
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -302,6 +323,7 @@ response = chat.invoke(
     )
 )
 ```
+
 
 流式输出示例：
 
@@ -362,6 +384,7 @@ for chunk in response:
 
 在使用大模型时,我们经常会遇到输出解析的问题。比如:
 
+
 ```python
 llm = ChatOpenAI()
 
@@ -375,26 +398,36 @@ llm.invoke("告诉我3个动物的名字。")  # 输出: 好的，这里有三�
 llm.invoke("给我一个json数据,键为a和b")  # 输出: {\n "a": 10,\n "b": 20\n}
 ```
 
+
 OutputParser就是为了解决这些问题而设计的。它通过:
 
+
 1. 预设提示 - 告诉LLM需要的输出格式
+
 2. 解析功能 - 将输出转换成指定格式
+
+
 
 **Parser类型详解**
 
 Langchain 提供了多种Parser：
 
+
 1. 基础Parser：
     - StrOutputParser: 最简单的Parser,原样返回文本
     - BaseOutputParser: 所有Parser的基类
     - BaseLLMOutputParser: 专门用于LLM输出的基类
+
 2. 格式化Parser：
     - JsonOutputParser: 解析JSON格式输出
     - XMLOutputParser: 解析XML格式输出
     - PydanticOutputParser: 使用Pydantic模型解析输出
+
 3. 列表类Parser：
     - CommaSeparatedListOutputParser: 解析逗号分隔的列表
     - NumberedListOutputParser: 解析数字编号的列表
+
+
 
 **实践示例**
 
@@ -414,6 +447,7 @@ chain = (
 # 调用
 response = chain.invoke({"query": "你好!"})
 ```
+
 
 2. JsonOutputParser使用：
 ```python
@@ -458,6 +492,7 @@ except OutputParserException as e:
     # 可以选择重试或使用默认值
 ```
 
+
 2. 使用重试机制：
 ```python
 # 可以配置回调来处理重试
@@ -475,16 +510,21 @@ class RetryHandler(BaseCallbackHandler):
     - 简单文本使用StrOutputParser
     - 结构化数据使用JsonOutputParser或PydanticOutputParser
     - 列表数据使用专门的列表Parser
+
 2. 提示设计
     - 在提示中明确指定输出格式
     - 使用Parser提供的format_instructions
+
 3. 异常处理
     - 总是处理可能的解析错误
     - 考虑添加重试机制
     - 提供合理的默认值
+
 4. 性能优化
     - 避免过于复杂的解析逻辑
     - 合理使用缓存
+
+
 
 **LCEL表达式与Runnable协议**
 
@@ -492,6 +532,7 @@ class RetryHandler(BaseCallbackHandler):
 **为什么需要LCEL**
 
 传统的链式调用方式存在嵌套问题：
+
 
 ```python
 content = parser.invoke(
@@ -503,7 +544,9 @@ content = parser.invoke(
 )
 ```
 
+
 LCEL 提供了更优雅的方式：
+
 
 ```python
 chain = prompt | llm | parser
@@ -514,9 +557,14 @@ content = chain.invoke({"query": req.query.data})
 **Runnable协议核心方法**
 
 - invoke/ainvoke: 调用组件
+
 - batch/abatch: 批量处理
+
 - stream/astream: 流式输出
+
 - transform: 转换输入输出
+
+
 
 **两个核心类**
 
@@ -531,6 +579,7 @@ chain = RunnableParallel(
 )
 resp = chain.invoke({"subject": "程序员"})
 ```
+
 
 2. RunnablePassthrough - 传递数据
 ```python
@@ -568,6 +617,7 @@ chain = prompt | llm | parser
 response = chain.invoke({"input": "Hello!"})
 ```
 
+
 2. 带检索的链：
 ```python
 def retrieval(query: str) -> str:
@@ -595,12 +645,17 @@ response = chain.invoke("问题")
     - 使用管道操作符(|)构建简单链
     - 复杂逻辑使用RunnableParallel
     - 数据传递用RunnablePassthrough
+
 2. 错误处理
     - 合理使用try/except
     - 实现错误回调处理
+
 3. 性能优化
     - 合适场景使用并行执行
     - 批处理代替单个处理
+
 4. 代码可维护性
     - 链结构保持清晰
     - 适当拆分复杂链
+
+
