@@ -711,8 +711,8 @@ class NotionGitSync:
             base_path = self.config.base_path
             files = self.converter.convert_workspace(notion_content, base_path)
             # 更新到GitHub
-            for file_path, content in files:
-                self.update_github(file_path, content)
+            for file_path, content, page_id, last_edited_time in files:
+                self.update_github(file_path, content, page_id, last_edited_time)
 
             self.logger.info("Sync completed successfully")
 
