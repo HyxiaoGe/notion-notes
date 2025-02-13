@@ -238,3 +238,4 @@
 - 2025-02-13 14:05:58: update `notion_sync/AI.md`
 - 2025-02-13 14:06:01: update `notion_sync/LangChain RAG 应用开发优化策略详解.md`
 - 2025-02-13 14:06:04: update `notion_sync/LangChain RAG 应用开发组件深度解析.md`
+- 2025-02-13 14:06:07: update `notion_sync/LangChain初入门.md`
