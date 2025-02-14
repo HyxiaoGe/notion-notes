@@ -12,11 +12,83 @@ from notion_client import Client as NotionClient
 from retrying import retry
 
 
+class NotionDebugger:
+    """Notion调试类,记录API的原始返回内容"""
+
+    def __init__(self, debug_dir: str = "notion_debug"):
+        self.debug_dir = debug_dir
+        self._init_debug_dir()
+
+    def _init_debug_dir(self):
+        """初始化debug目录"""
+        os.makedirs(self.debug_dir, exist_ok=True)
+        # 创建README说明文件
+        readme_path = os.path.join(self.debug_dir, "README.md")
+        if not os.path.exists(readme_path):
+            with open(readme_path, "w", encoding="utf-8") as f:
+                f.write("# Notion Debug Files\n\n")
+                f.write("本目录包含Notion API的原始返回数据,用于调试同步问题。\n\n")
+                f.write("## 文件说明\n\n")
+                f.write("- `index.md`: 索引文件,记录所有debug文件的信息\n")
+                f.write("- `*.json`: 具体页面的API返回数据\n\n")
+
+    def save_debug_info(self, page_data: Dict, converted_content: str, file_path: str):
+        """保存debug信息"""
+        try:
+            # 获取页面信息
+            page = page_data['page']
+            page_id = page['id']
+            page_title = page['properties']['title']['title'][0]['plain_text']
+
+            # 生成文件名
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            safe_title = "".join(x for x in page_title if x.isalnum() or x in "- _")[:50]
+            debug_filename = f"{safe_title}_{timestamp}.json"
+            debug_path = os.path.join(self.debug_dir, debug_filename)
+
+            # 准备debug信息
+            debug_info = {
+                "timestamp": timestamp,
+                "page_id": page_id,
+                "page_title": page_title,
+                "target_file": file_path,
+                "notion_data": page_data,
+                "converted_content": converted_content
+            }
+
+            # 保存debug信息
+            with open(debug_path, "w", encoding="utf-8") as f:
+                json.dump(debug_info, f, ensure_ascii=False, indent=2)
+
+            # 更新索引
+            index_path = os.path.join(self.debug_dir, "index.md")
+            index_entry = f"| {timestamp} | {page_title} | {page_id} | {file_path} | {debug_filename} |\n"
+
+            if not os.path.exists(index_path):
+                with open(index_path, "w", encoding="utf-8") as f:
+                    f.write("# Debug Files Index\n\n")
+                    f.write("| 时间 | 页面标题 | 页面ID | 目标文件 | Debug文件 |\n")
+                    f.write("|------|----------|--------|----------|------------|\n")
+
+            with open(index_path, "a", encoding="utf-8") as f:
+                f.write(index_entry)
+
+            return debug_path
+
+        except Exception as e:
+            print(f"Error saving debug info: {str(e)}")
+            return None
+
 class Config:
     """配置管理类"""
 
     def __init__(self, config_path: str = None):
         self.config = self._load_config(config_path)
+        self.debugger = NotionDebugger(self.debug_dir)
+
+    @property
+    def debug_dir(self) -> str:
+        return self.config.get('debug_dir', 'notion_debug')
 
     def _load_config(self, config_path: str = None) -> Dict:
         config = {}
@@ -98,6 +170,7 @@ class ContentConvert:
         self.table_data = {}  # 用于缓存表格数据
         self.processed_pages = set()  # 用于追踪已处理的页面
         self.page_map = {}  # 保存页面ID到文件路径的映射
+        self.config = Config()
 
         self.logger = SyncLogger()
 
@@ -180,6 +253,13 @@ class ContentConvert:
 
             # 转换内容
             content = self._convert_page_content(page_data)
+            debug_path = self.config.debugger.save_debug_info(
+                page_data,
+                content,
+                file_path
+            )
+            if debug_path:
+                self.logger.info(f"Debug info saved to {debug_path}")
             results = [(file_path, content, page_id, last_edited_time)]
 
             # 处理子页面
