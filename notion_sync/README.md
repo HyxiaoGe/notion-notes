@@ -350,3 +350,4 @@
 - 2025-02-18 02:05:39: update `notion_sync/大模型 RAG 应用开发基础及入门.md`
 - 2025-02-18 02:05:42: update `notion_sync/夯实基础了解LLm大语言模型.md`
 - 2025-02-18 08:15:34: update `notion_sync/AI.md`
+- 2025-02-18 08:15:37: update `notion_sync/LangChain RAG 应用开发优化策略详解.md`
