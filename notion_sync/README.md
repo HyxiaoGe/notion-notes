@@ -416,3 +416,4 @@
 - 2025-02-27 08:23:22: update `notion_sync/大模型 RAG 应用开发基础及入门.md`
 - 2025-02-27 08:23:25: update `notion_sync/夯实基础了解LLm大语言模型.md`
 - 2025-02-27 08:23:28: create `notion_sync/Kafka 消费者 Offset 机制详解.md`
+- 2025-02-28 08:23:00: update `notion_sync/AI.md`
