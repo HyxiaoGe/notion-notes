@@ -432,3 +432,4 @@
 - 2025-03-01 08:25:48: update `notion_sync/Kafka 消费者 Offset 机制详解.md`
 - 2025-03-02 08:24:41: update `notion_sync/AI.md`
 - 2025-03-02 08:24:43: update `notion_sync/LangChain RAG 应用开发优化策略详解.md`
+- 2025-03-02 08:24:46: update `notion_sync/LangChain RAG 应用开发组件深度解析.md`
