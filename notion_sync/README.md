@@ -441,3 +441,4 @@
 - 2025-03-03 08:23:59: update `notion_sync/LangChain RAG 应用开发优化策略详解.md`
 - 2025-03-03 08:24:03: update `notion_sync/LangChain RAG 应用开发组件深度解析.md`
 - 2025-03-03 08:24:06: update `notion_sync/LangChain初入门.md`
+- 2025-03-03 08:24:09: update `notion_sync/大模型 RAG 应用开发基础及入门.md`
