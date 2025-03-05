@@ -456,3 +456,4 @@
 - 2025-03-05 08:23:18: update `notion_sync/LangChain RAG 应用开发组件深度解析.md`
 - 2025-03-05 08:23:22: update `notion_sync/LangChain初入门.md`
 - 2025-03-05 08:23:25: update `notion_sync/大模型 RAG 应用开发基础及入门.md`
+- 2025-03-05 08:23:28: update `notion_sync/夯实基础了解LLm大语言模型.md`
