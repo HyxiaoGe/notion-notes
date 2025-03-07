@@ -1,6 +1,6 @@
 # LangChain RAG 应用开发优化策略详解
 
-_Last updated: 2025-03-06 08:23:26_
+_Last updated: 2025-03-07 08:23:21_
 
 ---
 
