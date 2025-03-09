@@ -480,3 +480,4 @@
 - 2025-03-08 08:19:12: update `notion_sync/夯实基础了解LLm大语言模型.md`
 - 2025-03-08 08:19:15: update `notion_sync/Kafka 消费者 Offset 机制详解.md`
 - 2025-03-09 08:21:09: update `notion_sync/AI.md`
+- 2025-03-09 08:21:12: update `notion_sync/LangChain RAG 应用开发优化策略详解.md`
