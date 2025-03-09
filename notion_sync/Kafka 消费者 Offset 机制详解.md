@@ -1,6 +1,6 @@
 # Kafka 消费者 Offset 机制详解
 
-_Last updated: 2025-03-08 08:18:56_
+_Last updated: 2025-03-09 08:21:08_
 
 ---
 
