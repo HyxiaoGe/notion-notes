@@ -1,0 +1,72 @@
+name: Notion to Hexo Sync
+
+on:
+  schedule:
+    # 每天北京时间早上8点运行
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  sync-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout notion-notes repo
+      uses: actions/checkout@v3
+      with:
+        path: notion-notes
+    
+    - name: Checkout hexo blog repo
+      uses: actions/checkout@v3
+      with:
+        repository: HyxiaoGe/blog
+        token: ${{ secrets.ACTIONS_TOKEN }}
+        path: blog
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        cd notion-notes
+        pip install -r requirements.txt
+        pip install requests  # 添加requests依赖用于下载图片
+    
+    - name: Run Notion to Hexo sync
+      env:
+        NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+        NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
+        HEXO_REPO: HyxiaoGe/blog
+        HEXO_SOURCE_BRANCH: master
+      run: |
+        cd notion-notes
+        python notion_to_hexo.py
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install Hexo dependencies
+      run: |
+        cd blog
+        npm install
+    
+    - name: Generate Hexo site
+      run: |
+        cd blog
+        npm run clean
+        npm run build
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.ACTIONS_TOKEN }}
+        publish_dir: ./blog/public
+        publish_branch: main
+        external_repository: HyxiaoGe/hyxiaoge.github.io
+        force_orphan: true
+        commit_message: "Deploy from Notion sync ${{ github.run_number }}"
