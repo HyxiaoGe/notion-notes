@@ -43,7 +43,12 @@ jobs:
         HEXO_SOURCE_BRANCH: master
       run: |
         cd notion-notes
+        echo "Starting Notion to Hexo sync..."
         python notion_to_hexo.py
+        echo "Sync completed. Checking blog repo..."
+        cd ../blog
+        echo "Articles in source/_posts:"
+        ls -la source/_posts/ || echo "source/_posts directory not found"
     
     - name: Setup Node.js
       uses: actions/setup-node@v3
