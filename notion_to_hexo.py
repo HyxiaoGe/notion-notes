@@ -212,7 +212,8 @@ date: {date_str}"""
                         child_content = self._convert_block(child, page_title)
                         if child_content:
                             result += child_content
-                    self.list_states.pop()
+                    if self.list_states:  # 检查列表是否为空
+                        self.list_states.pop()
                 
                 return result
                 
@@ -233,7 +234,8 @@ date: {date_str}"""
                         child_content = self._convert_block(child, page_title)
                         if child_content:
                             result += child_content
-                    self.list_states.pop()
+                    if self.list_states:  # 检查列表是否为空
+                        self.list_states.pop()
                 
                 return result
                 
