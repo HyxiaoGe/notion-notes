@@ -510,3 +510,4 @@
 - 2025-07-28 08:24:04: update `notion_sync/Kafka 复习.md`
 - 2025-07-28 08:24:07: create `notion_sync/Nginx 复习.md`
 - 2025-07-28 08:24:10: create `notion_sync/Redis 是什么.md`
+- 2025-07-29 08:24:13: update `notion_sync/记录.md`
