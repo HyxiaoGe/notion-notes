@@ -516,3 +516,4 @@
 - 2025-07-29 08:24:21: update `notion_sync/Kafka 复习.md`
 - 2025-07-29 08:24:24: update `notion_sync/Nginx 复习.md`
 - 2025-07-29 08:24:27: update `notion_sync/Redis 是什么.md`
+- 2025-07-29 08:24:30: create `notion_sync/MySQL 复习.md`
