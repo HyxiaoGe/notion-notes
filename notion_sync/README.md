@@ -513,3 +513,4 @@
 - 2025-07-29 08:24:13: update `notion_sync/记录.md`
 - 2025-07-29 08:24:16: update `notion_sync/ElasticSearch 复习.md`
 - 2025-07-29 08:24:19: update `notion_sync/Fusion面试复习的页面.md`
+- 2025-07-29 08:24:21: update `notion_sync/Kafka 复习.md`
